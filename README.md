@@ -1,8 +1,9 @@
-# cosmiccoding.com.au
+# In development!
 
-Source for [cosmiccoding.com.au](https://cosmiccoding.com.au) — Sam Hinton's
-personal site. Books, reviews, blog posts, tutorials, an artist corner, and
-a CV.
+# [Kim's Journal](https://kimley89.github.io/Kim/)
+
+Source for [Kim's Journal]([https://cosmiccoding.com.au](https://kimley89.github.io/Kim/)) — Kim's
+personal site. Books, reviews, blog posts.
 
 The site is a static build produced by **Astro v5** with **Svelte 5**
 islands for the interactive bits (reviews explorer, artists explorer, mobile
