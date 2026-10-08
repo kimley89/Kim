@@ -36,7 +36,7 @@ export function flowchartPreload() {
 
         const entrypoints = ['component-url', 'renderer-url'].map((attribute) => {
           const url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];
-          const normalized = url?.replace(/^\/Kim/, '');
+         const normalized = url?.replace(/^\/Kim/, '') || '';
           if (!url?.startsWith('/_astro/')) throw new Error(`Unexpected flowchart ${attribute}: ${url}`);
           return url.slice(1);
         });
