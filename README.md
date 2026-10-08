@@ -35,7 +35,7 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
       { label: 'Courses', link: '${BASE}/#courses' },
       { label: 'CV', link: '${BASE}/static/resume/Samuel_Hinton_CV.pdf' },
     ] as const;
- ``` 
+  ``` 
 
 ## Quick start
 
