@@ -35,11 +35,16 @@ export function flowchartPreload() {
         if (!island) throw new Error('Flowchart island missing from the generated page');
 
         const entrypoints = ['component-url', 'renderer-url'].map((attribute) => {
-          const url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];
+          let url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];  // ✓ Changed to 'let'
           url = url?.replace(/^\/Kim/, '') || '';
           if (!url?.startsWith('/_astro/')) throw new Error(`Unexpected flowchart ${attribute}: ${url}`);
           return url.slice(1);
-        });
+        });        
+        // const entrypoints = ['component-url', 'renderer-url'].map((attribute) => {
+        //   const url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];
+        //   if (!url?.startsWith('/_astro/')) throw new Error(`Unexpected flowchart ${attribute}: ${url}`);
+        //   return url.slice(1);
+        // });
         const modules = new Set();
         function visit(filename) {
           if (modules.has(filename)) return;
