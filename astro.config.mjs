@@ -18,7 +18,8 @@ import { flowchartPreload } from './scripts/flowchart-preload.mjs';
 const redirects = await collectRedirects();
 
 export default defineConfig({
-  //site: 'https://cosmiccoding.com.au',
+  site: 'https://kimley89.github.io/Kim',
+  base: '/Kim/',
   output: 'static',
   // 'ignore' keeps the published file layout identical (every page becomes a
   // directory with index.html) but lets the dev server accept both `/foo` and
