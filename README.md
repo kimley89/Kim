@@ -11,6 +11,32 @@ via `.github/workflows/gh-pages.yml`.
 
 It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
 
+## To use the default GitHub URL, you need to add your repository name to the links:
+- in file astro.config.mjs:
+  ```bash
+    site: 'https://<username>.github.io/<repo name>',
+    base: '/<repo name>/',
+  ```
+- in file scripts/flowchart-preload.mjs:
+  ```bash
+    let url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];  // Changed variable from const to 'let'
+    url = url?.replace(/^\/Kim/, '') || '';                             // removes the auto generated repo name in the url
+  ```
+- in file src/data/nav.ts to use the BASE to the links:
+  ```bash
+    const BASE = '/Kim';
+    export const nav = [
+      { label: 'Books', link: '${BASE}/#books' },
+      { label: 'Reviews', link: `${BASE}/reviews/` },
+      { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
+      { label: 'Tutorials', link: `${BASE}/tutorials/` },
+      { label: 'Blog', link: `${BASE}/blogs/` },
+      { label: 'Artists', link: `${BASE}/artists/` },
+      { label: 'Courses', link: '${BASE}/#courses' },
+      { label: 'CV', link: '${BASE}/static/resume/Samuel_Hinton_CV.pdf' },
+    ] as const;
+ ``` 
+
 ## Quick start
 
 ```bash
