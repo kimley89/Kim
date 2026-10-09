@@ -17,12 +17,12 @@ interface Props {
 
 const SITE_TITLE = 'Samuel Hinton';
 const SITE_DESCRIPTION =
-  "Samuel Hinton's latest books, blogs, tutorials, and courses. Plus just his general thoughts on the world, which probably have little value.";
+  "Samuel Hinton's latest books, blogs. Plus just his general thoughts on the world, which probably have little value.";
 
 const { title, description, image, type = 'website' } = Astro.props;
 const finalDescription = description ?? SITE_DESCRIPTION;
 const finalTitleForSocial = title ?? SITE_TITLE;
-const siteOrigin = (Astro.site ?? new URL('https://cosmiccoding.com.au')).origin;
+const siteOrigin = (Astro.site ?? new URL('https://kimley89.github.io/Kim/')).origin;
 const canonical = new URL(Astro.url.pathname, siteOrigin).href;
 const ogImage = image ? new URL(image, siteOrigin).href : null;
 const twitterCard = ogImage ? 'summary_large_image' : 'summary';
