@@ -16,7 +16,7 @@ import { contentAssets } from './scripts/content-assets.mjs';
 const redirects = await collectRedirects();
 
 export default defineConfig({
-  site: 'https://kimley89.github.io/Kim',
+  site: 'https://kimfoo95.github.io/Kim',
   base: '/Kim/',
   output: 'static',
   // 'ignore' keeps the published file layout identical (every page becomes a
