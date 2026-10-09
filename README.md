@@ -18,7 +18,7 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
     site: 'https://<username>.github.io/<repo name>',
     base: '/<repo name>/',
   ```
-- in file src/data/nav.ts to use the BASE to the links:
+- in file src/data/nav.ts and src/pages/reviews/index.astro to use the BASE to the links:
   ```bash
     const BASE = '/Kim';
     export const nav = [
