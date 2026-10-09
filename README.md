@@ -30,7 +30,6 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
       { label: 'Books', link: '${BASE}/#books' },
       { label: 'Reviews', link: `${BASE}/reviews/` },
       { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
-      { label: 'Tutorials', link: `${BASE}/tutorials/` },
       { label: 'Blog', link: `${BASE}/blogs/` },
       { label: 'Artists', link: `${BASE}/artists/` },
       { label: 'Courses', link: '${BASE}/#courses' },
