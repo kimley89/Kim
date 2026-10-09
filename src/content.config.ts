@@ -51,27 +51,4 @@ const blogs = defineCollection({
   }),
 });
 
-const tutorials = defineCollection({
-  loader: glob({ pattern: '*/index.{md,mdx}', base: './content/tutorials' }),
-  // `title` is optional because a few tutorials (e.g. genetic_part_one)
-  // only set `short_title`; the Hugo template falls back to that. Pages
-  // that consume this collection must do the same.
-  schema: z.object({
-    title: z.string().optional(),
-    short_title: z.string().optional(),
-    description: z.string().optional(),
-    date: z.coerce.date(),
-    categories: z.array(z.string()).default(['tutorial']),
-    tags: z.array(z.string()).default([]),
-    aliases: z.array(z.string()).default([]),
-    images: z.array(z.string()).optional(),
-    hide_description: z.boolean().default(false),
-    hide_toggle: z.boolean().default(false),
-    math: z.boolean().default(false),
-  }).refine(
-    (data) => data.title || data.short_title,
-    { message: 'Either `title` or `short_title` is required', path: ['title'] },
-  ),
-});
-
-export const collections = { reviews, blogs, tutorials };
+export const collections = { reviews, blogs };
