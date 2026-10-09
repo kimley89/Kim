@@ -373,13 +373,7 @@
         >
       </label>
     {/each}
-    <a
-      href="/reviews/flowchart/"
-      class="inline-flex items-center py-2 rounded-md cursor-pointer text-gray-100"
-    >
-      <span class="px-4 py-2 rounded-r-md bg-gray-700">Flowchart</span>
-    </a>
-
+   
     <label
       for="sort-order"
       class="pl-4 inline-flex items-center p-2 rounded-md cursor-pointer text-gray-100"

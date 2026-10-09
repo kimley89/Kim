@@ -18,18 +18,12 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
     site: 'https://<username>.github.io/<repo name>',
     base: '/<repo name>/',
   ```
-- in file scripts/flowchart-preload.mjs:
-  ```bash
-    let url = island.match(new RegExp(`${attribute}="([^"]+)"`))?.[1];  // Changed variable from const to 'let'
-    url = url?.replace(/^\/Kim/, '') || '';                             // removes the auto generated repo name in the url
-  ```
-- in file src/data/nav.ts to use the BASE to the links:
+- in file src/data/nav.ts and src/pages/reviews/index.astro to use the BASE to the links:
   ```bash
     const BASE = '/Kim';
     export const nav = [
       { label: 'Books', link: '${BASE}/#books' },
       { label: 'Reviews', link: `${BASE}/reviews/` },
-      { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
       { label: 'Blog', link: `${BASE}/blogs/` },
       { label: 'Artists', link: `${BASE}/artists/` },
     ] as const;
