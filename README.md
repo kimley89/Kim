@@ -29,7 +29,6 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
     export const nav = [
       { label: 'Books', link: '${BASE}/#books' },
       { label: 'Reviews', link: `${BASE}/reviews/` },
-      { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
       { label: 'Blog', link: `${BASE}/blogs/` },
       { label: 'Artists', link: `${BASE}/artists/` },
     ] as const;
