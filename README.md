@@ -7,7 +7,7 @@ personal site. Books, reviews, blog posts.
 
 The site is a static build produced by **Astro v5** with **Svelte 5**
 islands for the interactive bits (reviews explorer, artists explorer, mobile
-menu, code-toggle on tutorials). It deploys to GitHub Pages from `master`
+menu). It deploys to GitHub Pages from `master`
 via `.github/workflows/gh-pages.yml`.
 
 It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
@@ -47,7 +47,7 @@ make prod      # clean build into `dist/`
 
 ## Layout
 
-- `src/content/` — Astro content collections (`reviews/`, `blogs/`, `tutorials/`).
+- `src/content/` — Astro content collections (`reviews/`, `blogs/`).
 - `src/pages/` — routes; dynamic `[...slug].astro` files render collection items.
 - `src/components/` — Astro components, with Svelte islands under `components/islands/`.
 - `src/data/` — typed YAML-replacement data files (books, artists, podcasts, …).
