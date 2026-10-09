@@ -9,8 +9,6 @@ import { remarkImageClass } from './src/lib/remark-image-class.ts';
 import base16Snazzy from './src/lib/shiki-themes/base16-snazzy.json' with { type: 'json' };
 import { collectRedirects } from './scripts/collect-redirects.mjs';
 import { contentAssets } from './scripts/content-assets.mjs';
-import { flowchartPositionsDev } from './scripts/flowchart-positions-dev.mjs';
-import { flowchartPreload } from './scripts/flowchart-preload.mjs';
 
 // Hugo's `aliases:` frontmatter is replicated as Astro's `redirects` map.
 // `collectRedirects` walks `content/{reviews,blogs}/*/index.{md,mdx}`
