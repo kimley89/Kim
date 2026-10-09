@@ -43,7 +43,6 @@ export default defineConfig({
     // are republished at `/<type>/<slug>/<file>` so raw `<video src="...">`
     // and `![...](path.png)` references in markdown keep resolving.
     contentAssets(),
-    flowchartPreload(),
     {
       name: 'svelte-runtime-bundle',
       hooks: {
@@ -64,11 +63,6 @@ export default defineConfig({
         },
       },
     },
-    // Dev-only authoring endpoint for the flowchart's position cache.
-    // Lives at `/api/flowchart-positions.json` while `astro dev` is
-    // running; absent from the production build entirely. Backs the
-    // drag-and-save toolbar in `Flowchart.svelte`.
-    flowchartPositionsDev(),
   ],
   // Tailwind v4 ships as a Vite plugin instead of an Astro integration.
   // It only does work for stylesheets that contain `@import "tailwindcss"`,
