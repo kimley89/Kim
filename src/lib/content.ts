@@ -11,11 +11,6 @@ export const getRecentBlogs = async (n = 6) =>
     sort((a, b) => +b.data.date - +a.data.date).
     slice(0, n);
 
-export const getRecentTutorials = async (n = 6) =>
-  (await getCollection('tutorials')).
-    sort((a, b) => +b.data.date - +a.data.date).
-    slice(0, n);
-
 export const getRecentReviews = async (n = 5) =>
   (await getCollection('reviews')).
     sort((a, b) => +b.data.date - +a.data.date).

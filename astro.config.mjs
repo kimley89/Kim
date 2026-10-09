@@ -13,7 +13,7 @@ import { flowchartPositionsDev } from './scripts/flowchart-positions-dev.mjs';
 import { flowchartPreload } from './scripts/flowchart-preload.mjs';
 
 // Hugo's `aliases:` frontmatter is replicated as Astro's `redirects` map.
-// `collectRedirects` walks `content/{reviews,blogs,tutorials}/*/index.{md,mdx}`
+// `collectRedirects` walks `content/{reviews,blogs}/*/index.{md,mdx}`
 // once at config-load time and produces `{ '/old/path/': '/new/path/' }`.
 const redirects = await collectRedirects();
 

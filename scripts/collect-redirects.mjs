@@ -20,7 +20,7 @@ import path from 'node:path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
 
-const CONTENT_GLOB = 'content/{reviews,blogs,tutorials}/*/index.{md,mdx}';
+const CONTENT_GLOB = 'content/{reviews,blogs}/*/index.{md,mdx}';
 
 function normalise(alias) {
   if (!alias) return null;
