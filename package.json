@@ -37,7 +37,6 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
     "@hpcc-js/wasm-graphviz": "^1.21.5",
-    "@xyflow/svelte": "^1.5.2",
     "@zumer/snapdom": "^2.23.1"
   },
   "optionalDependencies": {
