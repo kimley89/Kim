@@ -3,7 +3,6 @@ const BASE = '/Kim';
 export const nav = [
   { label: 'Books', link: '/#books' },
   { label: 'Reviews', link: `${BASE}/reviews/` },
-  { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
   { label: 'Blog', link: `${BASE}/blogs/` },
   { label: 'Artists', link: `${BASE}/artists/` },
 ] as const;
