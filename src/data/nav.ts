@@ -6,7 +6,6 @@ export const nav = [
   { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
   { label: 'Blog', link: `${BASE}/blogs/` },
   { label: 'Artists', link: `${BASE}/artists/` },
-  { label: 'CV', link: '${BASE}/static/resume/Samuel_Hinton_CV.pdf' },
 ] as const;
 
 export type NavItem = (typeof nav)[number];

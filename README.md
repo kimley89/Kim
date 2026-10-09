@@ -2,7 +2,7 @@
 
 # [Kim's Journal](https://kimley89.github.io/Kim/)
 
-Source for [Kim's Journal]([https://cosmiccoding.com.au](https://kimley89.github.io/Kim/)) — Kim's
+Source for [Kim's Journal]([https://kimley89.github.io/Kim/])) — Kim's
 personal site. Books, reviews, blog posts.
 
 The site is a static build produced by **Astro v5** with **Svelte 5**
@@ -32,7 +32,6 @@ It used to be a Hugo site. The migration is documented under [`plans/`](plans/).
       { label: 'Flowchart', link: `${BASE}/reviews/flowchart/` },
       { label: 'Blog', link: `${BASE}/blogs/` },
       { label: 'Artists', link: `${BASE}/artists/` },
-      { label: 'CV', link: '${BASE}/static/resume/Samuel_Hinton_CV.pdf' },
     ] as const;
   ``` 
 
@@ -53,7 +52,7 @@ make prod      # clean build into `dist/`
 - `src/lib/` — shared helpers (covers, content sorting, types, the `fancy-card` 3-D effect).
 - `src/styles/` — Tailwind v4 entrypoint plus plain-CSS partials, all imported from `main.css`. The CSS-first `@theme` block in `main.css` replaces what used to live in `tailwind.config.cjs`.
 - `src/assets/` — images and SVGs that go through `astro:assets` for hashing/optimisation.
-- `astro-public/` — verbatim static files (favicons, `CNAME`, podcast thumbnails, CV PDF).
+- `astro-public/` — verbatim static files (favicons, podcast thumbnails).
 - `content/` — markdown sources. Tutorials are generated from notebooks via `builder/convert.py`.
 - `plans/` — phase-by-phase migration plan, kept around for context.
 - `skills/` — authoritative operational playbooks (book reviews, find-artists, humanizer, …). `make install` symlinks these into `.claude/skills/` and `.cursor/skills/`.
