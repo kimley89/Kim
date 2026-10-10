@@ -1,8 +1,8 @@
 # In development!
 
-# [Kim's Journal](https://kimley89.github.io/Kim/)
+# [Kim's Journal](https://flamegarnet89.github.io/Kim/)
 
-Source for [Kim's Journal]([https://kimley89.github.io/Kim/])) — Kim's
+Source for [Kim's Journal]([https://flamegarnet89.github.io/Kim/])) — Kim's
 personal site. Books, reviews, blog posts.
 
 The site is a static build produced by **Astro v5** with **Svelte 5**
