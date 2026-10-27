@@ -12,10 +12,10 @@ const reviews = (await getCollection('reviews'))
     <p>
       For those loving progression fantasy and LitRPG, here are my latest reviews.
       <a class="under" href="/reviews">More available here, of course!</a>
-      And if you want an fun flowchart or tier list, that's available too!
+      And if you want a fun tier list, that's available too!
     </p>
   </div>
-  <div class="max-w-sm mx-auto md:max-w-none">
+  <div class="max-w-sm mx-auto md:max-w-none mt-6">
     <div class="grid gap-12 md:grid-cols-3 lg:grid-cols-4 lg:grid-cols-5 md:gap-x-6 md:gap-y-8 items-start">
       {reviews.map((entry) => <ReviewCoverCard entry={entry} />)}
     </div>

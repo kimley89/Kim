@@ -88,7 +88,7 @@
         <div class="card_translator">
           <a class="card_rotator small_rot card_layer block" href={prefixBase(post.link)} aria-label={post.name}>
             <div class="card_layer">
-              <article class="flex flex-col h-full bg-gray-800">
+              <article class="flex flex-col h-full bg-green-800">
                 <header class="mb-4">
                   <figure class="relative h-0 pb-9/16 overflow-hidden">
                     <picture>
@@ -108,7 +108,7 @@
                 </header>
                 <div class="px-4 pb-4 flex flex-col flex-grow min-h-[13.25rem]">
                   <div class="mb-3">
-                    <ul class="flex flex-wrap text-xs font-medium -m-1">
+                    <ul class="flex flex-wrap font-medium -m-1 justify-center">
                       {#each post.tags as tag (tag)}
                         <li class="m-1 inline-flex text-center py-1 px-3 rounded-full tag-{tag}">
                           {tag}
@@ -117,7 +117,7 @@
                     </ul>
                   </div>
                   <h4 class="mb-2">{post.name}</h4>
-                  <p class="text-lg text-gray-400 flex-grow">{post.description}</p>
+                  <p class="text-lg text-green-300 flex-grow">{post.description}</p>
                 </div>
               </article>
             </div>

@@ -19,7 +19,7 @@
   /* --- Fonts -------------------------------------------------------- */
   --font-inter: "Inter", "Inter Fallback", system-ui, -apple-system, "Roboto", sans-serif;
   --font-architects-daughter: "Architects Daughter", sans-serif;
-
+ 
   /* --- Font-size scale (overrides v4 defaults to match v3 values) ---
      v4 ships --text-7xl/8xl/9xl; we leave those untouched so
      @apply md:text-7xl in styling.css still resolves. */
@@ -56,7 +56,7 @@
   --color-π-800: #9a3412;
   --color-π-900: #7c2d12;
 
-  --color-S-50:  #eef2ff;
+  /* --color-S-50:  #eef2ff;
   --color-S-100: #e0e7ff;
   --color-S-200: #c7d2fe;
   --color-S-300: #a5b4fc;
@@ -65,62 +65,96 @@
   --color-S-600: #4f46e5;
   --color-S-700: #4338ca;
   --color-S-800: #3730a3;
-  --color-S-900: #312e81;
+  --color-S-900: #312e81; */
 
-  --color-A-50:  #fefce8;
-  --color-A-100: #fef9c3;
-  --color-A-200: #fef08a;
-  --color-A-300: #fde047;
-  --color-A-400: #facc15;
-  --color-A-500: #eab308;
-  --color-A-600: #ca8a04;
-  --color-A-700: #a16207;
-  --color-A-800: #854d0e;
-  --color-A-900: #713f12;
+  /* New */
+  --color-S-50:  #ffedd6;
+  --color-S-100: #ffd6a5;
+  --color-S-200: #f09499;
+  --color-S-300: #e0528d;
+  --color-S-400: #bf50b5;
+  --color-S-500: #9d4edd;
+  --color-S-600: #00b4db;
+  --color-S-700: #2f6da3;
+  --color-S-800: #793088;
+  --color-S-900: #552260;
 
-  --color-B-50:  #f8fafc;
-  --color-B-100: #f1f5f9;
-  --color-B-200: #e2e8f0;
-  --color-B-300: #cbd5e1;
-  --color-B-400: #94a3b8;
-  --color-B-500: #64748b;
-  --color-B-600: #475569;
-  --color-B-700: #334155;
-  --color-B-800: #1e293b;
-  --color-B-900: #0f172a;
+  --color-A-50:  #fdd8d8;
+  --color-A-100: #fcb0b0;
+  --color-A-200: #fe9090;
+  --color-A-300: #ff7070;
+  --color-A-400: #e44e4e;
+  --color-A-500: #c92c2c;
+  --color-A-600: #b02727;
+  --color-A-700: #972121;
+  --color-A-800: #7b1f23;
+  --color-A-900: #5e1d24;
 
-  --color-C-50:  #fff7ed;
-  --color-C-100: #ffedd5;
-  --color-C-200: #fed7aa;
-  --color-C-300: #fdba74;
-  --color-C-400: #fb923c;
-  --color-C-500: #f97316;
-  --color-C-600: #ea580c;
-  --color-C-700: #c2410c;
-  --color-C-800: #9a3412;
-  --color-C-900: #7c2d12;
+  --color-B-50:  #ffe2d6;
+  --color-B-100: #ffc6ad;
+  --color-B-200: #ffa985;
+  --color-B-300: #ff8d5c;
+  --color-B-400: #ff6624;
+  --color-B-500: #ff4d00;
+  --color-B-600: #d13f00;
+  --color-B-700: #a33100;
+  --color-B-800: #7b2500;
+  --color-B-900: #521800;
 
-  --color-D-50:  #fff1f2;
-  --color-D-100: #ffe4e6;
-  --color-D-200: #fecdd3;
-  --color-D-300: #fda4af;
-  --color-D-400: #fb7185;
-  --color-D-500: #f43f5e;
-  --color-D-600: #e11d48;
-  --color-D-700: #be123c;
-  --color-D-800: #9f1239;
-  --color-D-900: #881337;
+  --color-C-50:  #ffebc2;
+  --color-C-100: #ffdd99;
+  --color-C-200: #ffcf70;
+  --color-C-300: #f2b740;
+  --color-C-400: #f5a300;
+  --color-C-500: #e09200;
+  --color-C-600: #b87100;
+  --color-C-700: #8f5800;
+  --color-C-800: #663f00;
+  --color-C-900: #3d2600;
 
-  --color-F-50:  #ecfdf5;
-  --color-F-100: #d1fae5;
-  --color-F-200: #a7f3d0;
-  --color-F-300: #6ee7b7;
-  --color-F-400: #34d399;
-  --color-F-500: #10b981;
-  --color-F-600: #059669;
-  --color-F-700: #047857;
-  --color-F-800: #065f46;
-  --color-F-900: #064e3b;
+  --color-D-50:  #eaf5e0;
+  --color-D-100: #d5ebc2;
+  --color-D-200: #b4db94;
+  --color-D-300: #99cc68;
+  --color-D-400: #88c24a;
+  --color-D-500: #76a63c;
+  --color-D-600: #638a2d;
+  --color-D-700: #476a24;
+  --color-D-800: #2d4b1b;
+  --color-D-900: #1b2d10;
+
+  --color-E-50:  #e2f3ed;
+  --color-E-100: #c5e7db;
+  --color-E-200: #aadac8;
+  --color-E-300: #92c9b4;
+  --color-E-400: #7bb79f;
+  --color-E-500: #589d89;
+  --color-E-600: #49837a;
+  --color-E-700: #305f4d;
+  --color-E-800: #224438;
+  --color-E-900: #152921;
+
+  --color-F-50:  #d6ebff;
+  --color-F-100: #add6ff;
+  --color-F-200: #8dc0f6;
+  --color-F-300: #5da1e9;
+  --color-F-400: #3a8fe4;
+  --color-F-500: #0a85ff;
+  --color-F-600: #0e60be;
+  --color-F-700: #214582;
+  --color-F-800: #152b51;
+  --color-F-900: #0d1930;
+
+  --color-G-50:  #f3f2f8;
+  --color-G-100: #dbd7ea;
+  --color-G-200: #b6b0d4;
+  --color-G-300: #9e96c5;
+  --color-G-400: #857bb7;
+  --color-G-500: #5e538d;
+  --color-G-600: #4b4176;
+  --color-G-700: #3a335c;
+  --color-G-800: #292442;
+  --color-G-900: #191528;
 
   /* --- Overrides for built-in palettes ------------------------------ */
   --color-gray-100: #EBF1F5;
@@ -134,28 +168,62 @@
   --color-gray-900: #151719;
   --color-gray-950: #0f1112;
 
-  --color-purple-100: #F4F4FF;
-  --color-purple-200: #E2E1FF;
-  --color-purple-300: #CBCCFF;
-  --color-purple-400: #ABABFF;
-  --color-purple-500: #af8dff;
-  --color-purple-600: #8e5dff;
-  --color-purple-700: #7b4acf;
-  --color-purple-800: #38379C;
-  --color-purple-900: #262668;
+  --color-purple-100: #dbd7ea;
+  --color-purple-200: #c2bddb;
+  --color-purple-300: #aaa3cc;
+  --color-purple-400: #9289be;
+  --color-purple-500: #7065a4;
+  --color-purple-600: #5c5091;
+  --color-purple-700: #4a4176;
+  --color-purple-800: #39325d;
+  --color-purple-900: #2b2343;
+
+  /* Custom site palettes */
+  --color-cream-50:  #fffdf9;
+  --color-cream-100: #fff9f1;
+  --color-cream-200: #fff2e3;
+  --color-cream-300: #f9eee4;
+  --color-cream-400: #f3eadc;
+  --color-cream-500: #f6f0e5; /* light cream */ 
+  --color-cream-600: #e6dbc9; /* tag list selected bg */ 
+  --color-cream-700: #d6c6ad; /* font too coloured */
+  --color-cream-800: #bfae8f; /* font too dark */
+  --color-cream-900: #9f8f72;  
+
+  --color-green-50:  #eef3ec; /* selected link/button font */
+  --color-green-100: #dfebe0; 
+  --color-green-200: #c8dcc1; /* selected font button  */
+  --color-green-300: #a6bf98; /* main font choice */
+  --color-green-400: #8b9f7c; /* Ori #96ac86. font darker than font choice above. Blockquote */ /* selected bg button */
+  --color-green-500: #4a5b46; /* mid green */ 
+  --color-green-600: #2f3b2f;
+  --color-green-700: #263428; /* dark green */ /* lighter bg against main bg*/
+  --color-green-800: #1b241b; /* default tag font */
+  --color-green-900: #121712;/* main bg */ 
+  
+  --color-accent-50:  #fff4f6;
+  --color-accent-100: #fedfe4;
+  --color-accent-200: #fdbbbf;
+  --color-accent-300: #f69a98;
+  --color-accent-400: #d75a61;
+  --color-accent-500: #cd4756; /* accent red */
+  --color-accent-600: #b63d4b;
+  --color-accent-700: #8f2e38; /* tag list excluded bg */
+  --color-accent-800: #6f232a;
+  --color-accent-900: #4f181e; /* tag list font */  
 
   /* "main" — used by buttons, .newsletter, hover states. Identical to
-     v3's emerald palette. */
-  --color-main-50:  #ecfdf5;
-  --color-main-100: #d1fae5;
-  --color-main-200: #a7f3d0;
-  --color-main-300: #6ee7b7;
-  --color-main-400: #34d399;
-  --color-main-500: #10b981;
-  --color-main-600: #059669;
-  --color-main-700: #047857;
-  --color-main-800: #065f46;
-  --color-main-900: #064e3b;
+     v3's red palette. */
+  --color-main-50:  #fef2f2;
+  --color-main-100: #fee2e2;
+  --color-main-200: #fecaca;
+  --color-main-300: #fca5a5;
+  --color-main-400: #f87171;
+  --color-main-500: #ef4444; /* Standard Base Red */
+  --color-main-600: #dc2626;
+  --color-main-700: #b91c1c;
+  --color-main-800: #991b1b;
+  --color-main-900: #7f1d1d;
 }
 
 /* --- Custom utilities -------------------------------------------------
@@ -189,13 +257,13 @@
 @source inline("img-{smaller,small,reduced,poster,large,full,tiny,shrink}");
 @source inline("list-none");
 @source inline("grid-cols-cover-cards{,-mobile,-tier,-large,-mobile-large}");
-@source inline("{hover:,focus:,}bg-{S,A,B,C,D,F}-{500,600,700,800,900}");
-@source inline("{hover:,}text-{S,A,B,C,D,F}-{300,400}");
+@source inline("{hover:,focus:,}bg-{S,A,B,C,D,E,F,G}-{500,600,700,800,900}");
+@source inline("{hover:,}text-{S,A,B,C,D,E,F,G}-{300,400}");
 @source inline("{xs:,sm:,md:,lg:,}grid-cols-cover-cards{,-mobile,-tier,-large,-mobile-large}");
 
 /* v4 silently refuses to generate `bg-π-*` utilities even when listed
    explicitly via `@source inline()` — the non-ASCII `π` is rejected by
-   v4's class-name generator (other tier palettes `S A B C D F` work
+   v4's class-name generator (other tier palettes `S A B C D F G` work
    fine). The colour variables `--color-π-*` *do* emit, so we just hand-
    write the equivalent utility rules below. Rendered output is identical
    to what v4 would have produced for the other tiers. */

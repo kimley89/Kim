@@ -11,17 +11,22 @@
     posts: Post[];
     totalReviews: number;
   };
-
+  
+  // single source of truth for the layout options used by the template
+  const LAYOUT_OPTIONS: Layout[] = ['cover', 'tier', 'wide'];
+  
   let { posts, totalReviews }: Props = $props();
 
   const TIER_DESCRIPTIONS: Record<ReviewTier, string> = {
-    'π': 'I wrote this. Opinion is biased.',
-    S: 'Love to pieces',
-    A: 'Amazing, I follow chapter updates',
-    B: 'Very nice, I read when new books drop',
-    C: 'Good read but lower in TBR',
-    D: "Didn't grip me",
-    F: 'Dropped these',
+    'π': 'I wrote this. Opinion is biased',
+    S: 'Adore. Caused severe book hangover, scratched almost every itch!',
+    A: 'Amazing! Usually have one or two things that did not land perfectly',
+    B: 'Enjoyed, decent to pass the time :)',
+    C: 'Kinda meh. Future works might be better with experience',
+    D: 'Tried but not for me',
+    E: 'Was great, but halfway through, it got questionable',
+    F: 'Expectations was not met so dropped with some resentment',
+    G: 'On My Radar',
   };
 
   // Labels reuse the card glow gradients (--grad-* in styling.css, applied
@@ -31,11 +36,13 @@
   const TIER_LABEL_STYLES: Record<ReviewTier, { grad: string; scrim: number }> = {
     'π': { grad: 'var(--grad-m)', scrim: 0.5 },
     S: { grad: 'var(--grad-s)', scrim: 0.5 },
-    A: { grad: 'var(--grad-a)', scrim: 0.6 },
-    B: { grad: 'var(--grad-b)', scrim: 0.62 },
-    C: { grad: 'var(--grad-c)', scrim: 0.6 },
-    D: { grad: 'var(--grad-d)', scrim: 0.2 },
-    F: { grad: 'var(--grad-f)', scrim: 0.55 },
+    A: { grad: 'var(--grad-a)', scrim: 0.5 },
+    B: { grad: 'var(--grad-b)', scrim: 0.5 },
+    C: { grad: 'var(--grad-c)', scrim: 0.5 },
+    D: { grad: 'var(--grad-d)', scrim: 0.5 },
+    E: { grad: 'var(--grad-e)', scrim: 0.5 },
+    F: { grad: 'var(--grad-f)', scrim: 0.5 },
+    G: { grad: 'var(--grad-g)', scrim: 0.5 },
   };
 
   const LINK_TAG_MAP: Record<string, string> = {
@@ -43,7 +50,7 @@
     audible: 'audio',
   };
 
-  // Augment posts with derived tags (extra link-derived tags + 'finished').
+  // Augment posts with derived tags (extra link-derived tags + 'completed').
   const augmentedPosts = $derived.by(() => {
     return posts.map((post) => {
       const extras: string[] = [];
@@ -51,11 +58,11 @@
         const t = LINK_TAG_MAP[link.name];
         if (t) extras.push(t);
       }
-      const finished =
-        !post.tags.includes('in-progress') && !post.tags.includes('finished')
-          ? ['finished']
+      const completed =
+        !post.tags.includes('in-progress') && !post.tags.includes('completed')
+          ? ['completed']
           : [];
-      return { ...post, tags: [...post.tags, ...extras, ...finished] };
+      return { ...post, tags: [...post.tags, ...extras, ...completed] };
     });
   });
 
@@ -194,6 +201,7 @@
 
   function reset() {
     tagActivations = {};
+    //tagActivations = { series: true };
     searchTerm = '';
     layout = defaultLayout;
     byRank = true;
@@ -352,12 +360,13 @@
 
 <div id="toggle-input" class="max-w-7xl mx-auto">
   <div class="justify-center flex flex-wrap items-center">
-    {#each ['wide', 'cover', 'tier'] as opt, i (opt)}
+    {#each LAYOUT_OPTIONS as opt, i (opt)}
       {@const isActive = layout === opt}
-      {@const rounded = i === 0 ? 'rounded-l-md' : ''}
+      {@const last = LAYOUT_OPTIONS.length - 1}
+      {@const rounded = i === 0 ? 'rounded-l-md' : i === last ? 'rounded-r-md' : ''}
       <label
         for={`layout_${opt}`}
-        class="inline-flex items-center py-2 rounded-md cursor-pointer text-gray-100"
+        class="inline-flex items-center py-2 rounded-md cursor-pointer"
       >
         <input
           id={`layout_${opt}`}
@@ -368,7 +377,7 @@
           class="hidden peer"
           onclick={() => (layout = opt as Layout)}
         />
-        <span class="px-4 py-2 {rounded} {isActive ? 'bg-main-700' : 'bg-gray-700'}"
+        <span class="px-4 py-2 text-lg sm:text-base {rounded} {isActive ? 'bg-green-500 text-green-50' : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'}"
           >{opt === 'tier' ? 'Tier List' : opt[0].toUpperCase() + opt.slice(1)}</span
         >
       </label>
@@ -376,7 +385,7 @@
    
     <label
       for="sort-order"
-      class="pl-4 inline-flex items-center p-2 rounded-md cursor-pointer text-gray-100"
+      class="pl-4 inline-flex items-center p-2 rounded-md cursor-pointer"
     >
       <input
         id="sort-order"
@@ -385,10 +394,10 @@
         class="hidden peer"
         onclick={(e) => (byRank = (e.currentTarget as HTMLInputElement).checked)}
       />
-      <span class="px-4 py-2 rounded-l-md {byRank ? 'bg-main-700' : 'bg-gray-700'}"
+      <span class="px-4 py-2 rounded-l-md text-lg sm:text-base {byRank ? 'bg-green-500 text-green-50' : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'}"
         >Rank</span
       >
-      <span class="px-4 py-2 rounded-r-md {byRank ? 'bg-gray-700' : 'bg-main-700'}"
+      <span class="px-4 py-2 rounded-r-md text-lg sm:text-base {byRank ? 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50' : 'bg-green-500 text-green-50'}"
         >Recent</span
       >
     </label>
@@ -398,46 +407,60 @@
       id="search-input"
       name="search"
       bind:value={searchTerm}
-      class="bg-gray-800 rounded-md text-gray-100 m-2"
+      class="bg-green-700 rounded-md text-green-400 m-2 focus:text-green-100 outline-none focus:ring-2 focus:ring-green-400"
       placeholder="Search..."
     />
     {#if readingList.size > 0}
-      <button
-        type="button"
-        class="inline-flex items-center gap-1 m-2 px-4 py-2 rounded-md cursor-pointer text-gray-100
-               {showReadingList ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-gray-700 hover:bg-main-700'}"
-        onclick={() => (showReadingList = !showReadingList)}
-        title={showReadingList ? 'Show all reviews' : 'Show reading list only'}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 26"
-          width="16"
-          height="16"
-          fill={showReadingList ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          class="inline-block"
+      <div class="inline-flex items-center m-2 overflow-hidden rounded-md">
+        <button
+          type="button"
+          class={`inline-flex items-center gap-1 px-4 py-2 cursor-pointer text-lg sm:text-base ${          
+            showReadingList
+              ? 'bg-green-500 text-green-50'
+              : 'bg-green-700 text-green-300 hover:bg-green-500 hover:text-green-50'
+          } rounded-l-md`}
+          onclick={() => (showReadingList = !showReadingList)}
+          title={showReadingList ? 'Show all reviews' : 'Show reading list only'}
         >
-          <path d="M5 2a2 2 0 0 0-2 2v20l9-4 9 4V4a2 2 0 0 0-2-2H5z" />
-        </svg>
-        Reading List ({readingList.size})
-      </button>
-      <button
-        type="button"
-        class="inline-flex items-center m-2 px-4 py-2 bg-gray-700 hover:bg-red-700 rounded-md cursor-pointer text-gray-100"
-        onclick={clearReadingList}
-        title="Remove all books from your reading list"
-      >
-        Clear Reading List
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 26"
+            width="16"
+            height="16"
+            fill={showReadingList ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="inline-block"
+          >
+            <path d="M5 2a2 2 0 0 0-2 2v20l9-4 9 4V4a2 2 0 0 0-2-2H5z" />
+          </svg>
+          Show TBR List ({readingList.size})
+        </button>
+    
+        <button
+          type="button"
+          class="inline-flex items-center px-4 py-2 bg-accent-700 text-cream-200 hover:bg-accent-600 cursor-pointer rounded-r-md text-lg sm:text-base"
+          onclick={clearReadingList}
+          title="Remove all books from your reading list"
+        >
+          Clear TBR List
+        </button>
+      </div>
     {/if}
     <button
       type="button"
-      class="inline-flex items-center gap-2 m-2 px-4 py-2 bg-gray-700 hover:bg-main-700 rounded-md cursor-pointer text-gray-100 disabled:opacity-50 disabled:cursor-default disabled:hover:bg-gray-700"
+      class="inline-flex items-center m-2 px-4 py-2 bg-accent-700 hover:bg-accent-600 rounded-md cursor-pointer text-cream-200 text-lg sm:text-base"
+      onclick={reset}
+    >
+      Reset
+    </button>
+
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 m-2 px-4 py-2 h-[38px] sm:h-[38px] bg-green-700 hover:bg-green-500 disabled:hover:bg-green-700 rounded-md cursor-pointer disabled:cursor-default text-green-50 disabled:opacity-50"
       onclick={screenshot}
       disabled={capturing || visiblePosts.length === 0}
       title="Screenshot"
@@ -480,20 +503,15 @@
           <circle cx="12" cy="13" r="4" />
         </svg>
       {/if}
-    </button>
-    <button
-      type="button"
-      class="inline-flex items-center m-2 px-4 py-2 bg-gray-700 hover:bg-main-700 rounded-md cursor-pointer text-gray-100"
-      onclick={reset}>Reset</button
-    >
+    </button>    
   </div>
 </div>
 
-<div id="tags" class="tag-list max-w-7xl mx-auto mt-6 mb-6">
+<div id="tags" class="tag-list max-w-7xl mx-auto mt-5 mb-5">
   {#each allTags as tag (tag)}
     <button
       type="button"
-      class="tag tag-{tag} {activeClass(tag)}"
+      class="tag tag-{tag} {activeClass(tag)} hover:cursor-pointer text-base sm:text-sm"
       onclick={() => clickTag(tag)}
     >
       <span>{tag}</span>
@@ -525,7 +543,7 @@
            overflow:hidden makes this row the sticky element's scroll
            container, which never scrolls, so the label would never stick. -->
       <section
-        class="tier-row flex rounded-md overflow-clip bg-gray-800/50"
+        class="tier-row flex rounded-md overflow-clip bg-green-800/50"
         aria-label="Tier {group.tier}"
       >
         <div
@@ -541,8 +559,8 @@
                one (e.g. 40vh) shoves the label of short rows that sit above
                the line to the cell bottom instead of centering. -->
           <div class="sticky top-4 bottom-4 flex flex-col items-center gap-1 p-2 text-center">
-            <span class="text-3xl sm:text-5xl font-bold text-gray-100">{group.tier}</span>
-            <span class="sr-only sm:not-sr-only text-sm leading-tight text-gray-100/80">
+            <span class="text-3xl sm:text-5xl font-bold text-green-50">{group.tier}</span>
+            <span class="sr-only sm:not-sr-only text-sm leading-tight text-green-50/80">
               {TIER_DESCRIPTIONS[group.tier]}
             </span>
           </div>

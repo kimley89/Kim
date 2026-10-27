@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  @apply font-inter antialiased bg-gray-900 text-gray-200;
+  @apply font-inter antialiased bg-green-900 text-green-300;
 
   scrollbar-width: thin;
 
@@ -21,11 +21,67 @@ body {
   }
 }
 
+.blog-post h2,
+.blog-post h3,
+.blog-post h4,
+.blog-post h5,
+.blog-post h6
+/* #preamble h1, */
+/* #preamble h2, */
+/* #preamble h3 */
+{
+  @apply text-green-100;
+}
+
 .container.grid {
   max-width: none;
 }
-
 .content {
+  @apply mx-auto pt-10 md:pt-20 md:pb-16 px-4 md:px-8;
+
+  &.content-standard {
+    @apply max-w-6xl;
+  }
+  &.content-wide {
+    @apply max-w-7xl;
+  }
+  &.content-wider {
+    max-width: 90rem;
+  }
+  &.content-shrink {
+    @apply max-w-4xl;
+  }
+  &.content-small {
+    @apply max-w-2xl;
+  }
+  &.content-full {
+    @apply max-w-full;
+  }
+
+  .section-header {
+    @apply max-w-3xl mx-auto text-center pb-4;
+
+    h1:not(.title), 
+    h4{
+      @apply text-green-100;
+    }
+
+    &.blog {
+      @apply max-w-5xl mt-12 md:pb-4;
+    }
+
+    h1,
+    h2 {
+      @apply text-center mb-4;
+    }
+
+    p {
+      @apply text-xl text-green-300;
+    }
+  }
+}
+
+/* .content {
   @apply mx-auto pt-10 md:pt-20 md:pb-16 px-4 md:px-8;
 
   &.content-standard {
@@ -59,10 +115,10 @@ body {
     }
 
     p {
-      @apply text-xl text-gray-400;
+      @apply text-xl text-green-300;
     }
   }
-}
+} */
 
 .aspect-book {
   padding-bottom: 160%;
@@ -74,7 +130,7 @@ body {
     @apply text-7xl;
   }
   .subtitle {
-    @apply text-3xl font-thin max-w-2xl mx-auto px-4 sm:px-6 md:px-8 leading-relaxed;
+    @apply text-2xl font-thin max-w-2xl mx-auto px-4 sm:px-6 md:px-8 leading-relaxed text-green-100;
   }
 }
 
@@ -98,23 +154,23 @@ body {
 }
 
 /* v3 emitted `--tw-bg-opacity` for every `bg-*` utility, so overriding it
-   here fade the bg-gray-900 to 90 % opacity. v4 stopped emitting that
+   here fade the bg-green-900 to 90 % opacity. v4 stopped emitting that
    variable; the same effect comes from the slash-modifier syntax. */
 .newsletter-inner {
-  @apply p-8 bg-gray-900/90;
+  @apply p-8 bg-green-900/90;
   border-radius: var(--radius);
 }
 
 /* Reviews / artists explorer preamble. In the Hugo template this `<div
    id="preamble">` was nested inside the `.section-header` wrapper and
    inherited its `max-w-3xl mx-auto text-center` constraint plus the
-   `text-xl text-gray-400` paragraph styling. The Svelte port renders the
+   `text-xl text-green-300` paragraph styling. The Svelte port renders the
    preamble outside of `.section-header`, so we restate the constraint here. */
 #preamble {
   @apply max-w-3xl mx-auto text-center pb-4;
 
   p {
-    @apply text-xl text-gray-400;
+    @apply text-xl text-green-300;
   }
 }
 
@@ -130,14 +186,16 @@ body {
   }
   .tag {
     &.active-true {
-      @apply text-gray-100;
-      background: none #18ad40;
-      background-color: #18ad40;
+      @apply text-accent-900 bg-cream-600;
+      background-image: none;
+      /* background: none #18ad40; */
+      /* background-color: #18ad40; */
     }
     &.active-false {
-      @apply text-gray-100;
-      background: none #991b1b;
-      background-color: #991b1b;
+      @apply text-cream-100 bg-accent-700;
+      background-image: none;
+      /* background: none #991b1b; */
+      /* background-color: #991b1b; */
     }
     &.active-undefined {
       opacity: 0.2;
@@ -157,7 +215,7 @@ body {
 @media (max-width: 640px) {
   .tag-list {
     button {
-      @apply m-1 py-2 px-4 text-sm;
+      @apply m-1 py-2 px-4 text-base;
     }
   }
 }
@@ -169,7 +227,14 @@ body {
   h4,
   h5,
   h6 {
-    @apply max-w-6xl mx-auto text-center pt-6;
+    /* @apply max-w-6xl mx-auto text-center pt-6; */
+    @apply max-w-6xl mx-auto pt-6;
+
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left !important;
+    /* padding-top: 1.5rem; */
   }
   h1 {
     @apply mt-12;
@@ -184,7 +249,7 @@ body {
     @apply sm:text-xl leading-normal;
   }
   p {
-    @apply max-w-2xl mx-auto my-6 text-gray-300;
+    @apply max-w-2xl mx-auto my-6 text-green-300;
     strong,
     em {
       @apply text-white;
@@ -205,7 +270,7 @@ body {
     @apply max-w-2xl mx-auto my-6 list-decimal pl-8;
   }
   .badge-leader p em {
-    @apply text-gray-500;
+    @apply text-green-300;
   }
   figure:not([data-review-card] figure) {
     @apply mx-auto my-12 max-w-4xl;
@@ -332,7 +397,7 @@ pre.astro-code {
 /* Language-less fences are notebook output text: tucked under the code block
    that produced them, and muted. */
 pre.astro-code[data-language='plaintext'] {
-  @apply mt-0 text-gray-400;
+  @apply mt-0 text-green-400;
 }
 
 .carbon-code {
@@ -353,7 +418,7 @@ pre.astro-code[data-language='plaintext'] {
   padding: 0.15rem;
 
   .badge-inner {
-    @apply rounded-lg h-full w-full bg-gray-900 p-8;
+    @apply rounded-lg h-full w-full bg-green-900 p-8;
 
     figure {
       @apply rounded-full gradient m-0;
@@ -385,17 +450,17 @@ pre.astro-code[data-language='plaintext'] {
 
 /* Table styling */
 .table-auto {
-  @apply divide-y divide-gray-700;
+  @apply divide-y divide-green-700;
   margin: 0 auto;
   thead {
-    @apply bg-gray-800;
+    @apply bg-green-800;
 
     th {
-      @apply px-6 py-3 text-left text-gray-300 tracking-wider;
+      @apply px-6 py-3 text-left text-green-300 tracking-wider;
     }
   }
   tbody {
-    @apply divide-y divide-gray-700;
+    @apply divide-y divide-green-700;
 
     td {
       @apply px-6 py-2 whitespace-nowrap;
@@ -408,7 +473,7 @@ pre.astro-code[data-language='plaintext'] {
 }
 
 .sticky-sharebar {
-  @apply fixed md:bottom-20 bottom-2 right-2 xl:right-20 lg:right-4 rounded-full bg-gray-800 p-2;
+  @apply fixed md:bottom-20 bottom-2 right-2 xl:right-20 lg:right-4 rounded-full bg-green-800 p-2;
 
   .share-link {
     @apply h-12 w-12 text-2xl rounded-full text-center inline-block md:block;
@@ -419,7 +484,7 @@ pre.astro-code[data-language='plaintext'] {
 
 
     &:not(.hideshadow) {
-      @apply bg-gray-700 transition md:mt-2 ml-2 md:ml-0;
+      @apply bg-green-700 transition md:mt-2 ml-2 md:ml-0;
 
       &:hover {
         filter: saturate(1.0) brightness(1.5);
@@ -436,7 +501,7 @@ pre.astro-code[data-language='plaintext'] {
 
 .flowchart {
   p {
-    @apply text-xl text-gray-400;
+    @apply text-xl text-green-400;
   }
   iframe {
     height: 90vh;

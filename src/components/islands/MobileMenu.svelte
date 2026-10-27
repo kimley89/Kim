@@ -62,7 +62,7 @@
 >
   <span class="sr-only">Menu</span>
   <svg
-    class="w-6 h-6 fill-current text-gray-300 hover:text-gray-200 transition duration-150 ease-in-out"
+    class="w-6 h-6 fill-current text-green-300 hover:text-green-50 transition duration-150 ease-in-out"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -79,12 +79,12 @@
   class="absolute top-full z-20 left-0 w-full px-4 sm:px-6 overflow-hidden transition-all duration-300 ease-in-out"
   style={drawerStyle}
 >
-  <ul class="bg-gray-800 px-4 py-2">
+  <ul class="bg-green-800 px-4 py-2">
     {#each items as item (item.link)}
       <li>
         <a
           href={item.link}
-          class="flex text-gray-300 hover:text-gray-200 py-2"
+          class="flex text-green-300 hover:text-green-50 py-2"
           onclick={close}
         >{item.label}</a>
       </li>
