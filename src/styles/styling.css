@@ -1,4 +1,4 @@
-:root {    
+:root {
   --grad-m: linear-gradient(
     45deg,
     rgba(131, 58, 180, 1) 0%,
@@ -12,7 +12,7 @@
     rgba(217, 64, 64, 1) 85%,
     rgba(131, 58, 180, 1) 100%
   );
-
+ 
   /* --grad-d: linear-gradient(
     45deg,
     rgb(145, 42, 42),
@@ -244,7 +244,7 @@
       @apply text-gradient gradient;
     }
   }
- 
+
   /* Review pages: make H2/H3 align with the paragraph body */
   .review-article h2,
   .review-article h3,
@@ -268,7 +268,7 @@
   }
 
   p, ul, li, em, strong, a {
-    @apply text-[1.625rem] sm:text-[2rem] leading-snug sm:leading-normal;
+    @apply text-[1.5rem] sm:text-[2rem] leading-snug sm:leading-normal;
   }
 
   blockquote p {
@@ -357,39 +357,107 @@
     hsl(308, 75.5%, 79.2%)
   );
 }
-.tag-snippet,
-.tag-series,
+
+/* genre tags */
 .tag-time-loops,
-.tag-completed,
-.tag-in-progress,
-.tag-manhua,
-.tag-manhwa,
-.tag-manga, 
 .tag-magic-school,
 .tag-slice-of-life,
 .tag-litrpg,
 .tag-cultivation,
-.tag-hard-magic,
-.tag-companion,
-.tag-audio,
-.tag-female-lead,
-.tag-kingdom-building,
-.tag-fanfic,
 .tag-crafting,
 .tag-sci-fi,
 .tag-cyberpunk,
 .tag-pf-adjacent,
-.tag-system-apocalypse,
 .tag-superhero,
 .tag-wholesome,
 .tag-isekai,
-.tag-dungeon-core,
-.tag-amazon,
-.tag-royal_road,
-.tag-audible,
 .tag-vrmmo,
-.tag-parody {
-  @apply bg-cream-700 text-green-800 font-medium;
+  
+/* protagonist type */
+.tag-ensemble-cast,
+.tag-female-lead,
+.tag-male-lead,
+.tag-non-human-lead,
+  
+/* progression type */
+.tag-dungeon-core,
+.tag-kingdom-building,
+.tag-community-building,
+.tag-relationship-building,
+.tag-weak-to-strong,
+.tag-poor-to-rich{
+  @apply bg-cream-600 text-accent-50 font-medium;
+}  
+  
+/* book source */
+.tag-amazon,
+.tag-royal-road,
+.tag-audiobook,
+.tag-ao3,
+  
+/* book status */
+.tag-completed,
+.tag-ongoing,
+  
+/* book filter */
+.tag-series,
+.tag-book,
+  
+/* book format */
+.tag-fanfic,
+.tag-webnovel,
+.tag-novel,
+.tag-cn-light-novel,
+.tag-jp-light-novel,
+.tag-kr-light-novel,
+.tag-manga-jp,
+.tag-manhua-cn,
+.tag-manhwa-kr,
+  
+/* year */
+.tag-2015,
+.tag-2016,
+.tag-2017,
+.tag-2019,
+.tag-2020,
+.tag-2021,
+.tag-2022,
+.tag-2023,
+.tag-2024,
+.tag-2025,
+.tag-2026,
+.tag-2027,
+.tag-2028,
+.tag-2029,
+.tag-2030,
+.tag-2031,
+  
+.tag-wordcount {
+  @apply text-green-900 border-1 border-green-500 bg-green-300 font-medium;
+}    
+
+.review-card-tags .review-tag-dark,
+.review-card-tags .review-tag-light {
+  @apply text-cream-50 bg-cream-600/90 font-medium;
+}
+.review-card-tags .square-review-tag {
+  @apply text-green-50 bg-green-400/55 font-medium;
+}
+.review-summary ul.review-card-tags,
+.review-summary ul.review-card-tags ul {
+   @apply max-w-none m-0 p-0 list-none;
+}
+.review-summary ul.review-card-tags li {
+  @apply text-sm;
+}
+.review-card-tags .review-tag-link {
+  @apply block py-1 px-2.5 text-sm text-inherit no-underline;
+}
+.review-card-tags .review-tag-link:hover {
+  @apply brightness-110;
+}
+.review-card-tags .review-tag-link:focus-visible {
+  @apply outline-2 outline-offset-2 outline-current;
 }
   
 /* Turn white images to dark mode */

@@ -1,16 +1,135 @@
-
+  
 <script lang="ts">
   import { tick } from 'svelte';
-  import type { Post, ReviewTier } from '../../lib/types';
+  import {
+    BOOK_TAG,
+    BOOK_TAGS,
+    DEFAULT_FORMAT_TAG,
+    DEFAULT_PROTAGONIST_TAG,
+    DEFAULT_STATUS_TAG,
+    FORMAT_LABELS,
+    FORMAT_TAGS,
+    LINK_TAG_MAP,
+    PROGRESSION_LABELS,
+    PROGRESSION_TAGS,
+    PROTAGONIST_LABELS,
+    PROTAGONIST_TAGS,
+    SERIES_TAG,
+    SOURCE_LABELS,
+    SOURCE_TAGS,
+    STATUS_TAGS,
+    type BookTag,
+    type FormatTag,
+    type ProgressionTag,
+    type ProtagonistTag,
+    type SourceTag,
+    type StatusTag,
+  } from '../../lib/review-tags';
   import ReviewCard from '../ReviewCard.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { captureElement } from '../../lib/screenshot';
+	import { formatWordCount } from '../../lib/wordcount';
 
   type Layout = 'wide' | 'cover' | 'tier';
   type Props = {
     posts: Post[];
     totalReviews: number;
   };
+
+  type BookFilter = 'all' | BookTag;
+  type CompletionFilter = 'all' | 'completed' | 'ongoing';
+
+  const allAvailableSourceTags = $derived(
+    Array.from(
+      new Set(
+        augmentedPosts
+          .flatMap((p) => p.tags)
+          .filter((tag): tag is SourceTag => SOURCE_TAGS.includes(tag as SourceTag))
+      )
+    ).sort()
+  );
+
+  const availableSourceTags = $derived.by(() => {
+    const relevantPosts = augmentedPosts.filter(
+      (post) =>
+        (bookFilter === 'all' || post.tags.includes(bookFilter)) &&
+        (completionFilter === 'all' || post.tags.includes(completionFilter)) &&
+        (!selectedYear ||
+          String(new Date(post.date).getFullYear()) === selectedYear)
+    );
+
+    return Array.from(
+      new Set(
+        relevantPosts
+          .flatMap((post) => post.tags)
+          .filter((tag): tag is SourceTag => SOURCE_TAGS.includes(tag as SourceTag))
+      )
+    ).sort();
+  });
+
+  const availableProgressionTags = $derived(
+    Array.from(
+      new Set(
+        augmentedPosts
+          .flatMap((p) => p.tags)
+          .filter((tag): tag is ProgressionTag =>
+            PROGRESSION_TAGS.includes(tag as ProgressionTag)
+          )
+      )
+    ).sort()
+  );
+
+  const availableYearTags = $derived.by(() =>
+    Array.from(
+      new Set(
+        augmentedPosts.flatMap((post) => {
+          const stamp = new Date(post.date);
+          const year = Number(stamp.getFullYear());
+          return Number.isFinite(year) ? [String(year)] : [];
+        })
+      )
+    ).sort((a, b) => Number(b) - Number(a))
+  );
+
+  const allAvailableFormatTags = $derived(
+    Array.from(
+      new Set(
+        augmentedPosts
+          .flatMap((p) => p.tags)
+          .filter((tag): tag is FormatTag => FORMAT_TAGS.includes(tag as FormatTag))
+      )
+    ).sort()
+  );
+
+	const availableFormatTags = $derived.by(() => {
+    const relevantPosts = augmentedPosts.filter(
+      (post) =>
+        (bookFilter === 'all' || post.tags.includes(bookFilter)) &&
+        (completionFilter === 'all' || post.tags.includes(completionFilter)) &&
+        (!selectedYear ||
+          String(new Date(post.date).getFullYear()) === selectedYear)
+    );
+
+    return Array.from(
+      new Set(
+        relevantPosts
+          .flatMap((post) => post.tags)
+          .filter((tag): tag is FormatTag => FORMAT_TAGS.includes(tag as FormatTag))
+      )
+    ).sort();
+  });
+
+  const availableProtagonistTags = $derived(
+    Array.from(
+      new Set(
+        augmentedPosts
+          .flatMap((p) => p.tags)
+          .filter((tag): tag is ProtagonistTag =>
+            PROTAGONIST_TAGS.includes(tag as ProtagonistTag)
+          )
+      )
+   ).sort()
+  );
   
   // single source of truth for the layout options used by the template
   const LAYOUT_OPTIONS: Layout[] = ['cover', 'tier', 'wide'];
@@ -45,12 +164,32 @@
     G: { grad: 'var(--grad-g)', scrim: 0.5 },
   };
 
-  const LINK_TAG_MAP: Record<string, string> = {
-    amazon: 'amazon',
-    audible: 'audio',
-  };
-
   // Augment posts with derived tags (extra link-derived tags + 'completed').
+  function withDefaultBookTag(post: Post) {
+    return post.tags.includes(BOOK_TAG) ? [] : [BOOK_TAG];
+  }
+
+  function withDefaultFormatTag(post: Post) {
+    return post.tags.some((tag) => FORMAT_TAGS.includes(tag as FormatTag))
+      ? []
+      : [DEFAULT_FORMAT_TAG];
+  }
+
+  function withDefaultYearTag(post: Post) {
+    const date = new Date(post.date);
+    const year = Number.isNaN(date.getTime()) ? null : String(date.getFullYear());
+    if (!year) return [];
+    return post.tags.includes(year) ? [] : [year];
+  }
+
+  function withDefaultProtagonistTag(post: Post) {
+    return post.tags.some((tag) =>
+      PROTAGONIST_TAGS.includes(tag as ProtagonistTag)
+    )
+      ? []
+      : [DEFAULT_PROTAGONIST_TAG];
+  }
+  
   const augmentedPosts = $derived.by(() => {
     return posts.map((post) => {
       const extras: string[] = [];
@@ -58,17 +197,70 @@
         const t = LINK_TAG_MAP[link.name];
         if (t) extras.push(t);
       }
+  
+      const defaultBookTag = withDefaultBookTag(post);
+      const defaultFormatTag = withDefaultFormatTag(post);
+      const defaultProtagonistTag = withDefaultProtagonistTag(post);
+      const defaultYearTag = withDefaultYearTag(post);
+  
       const completed =
-        !post.tags.includes('in-progress') && !post.tags.includes('completed')
-          ? ['completed']
+        !STATUS_TAGS.some((tag) => post.tags.includes(tag))
+        ? [DEFAULT_STATUS_TAG]
           : [];
-      return { ...post, tags: [...post.tags, ...extras, ...completed] };
+  
+      return {
+        ...post,
+        tags: [
+          ...post.tags,
+          ...extras,
+          ...defaultBookTag,
+          ...defaultFormatTag,
+          ...defaultYearTag,
+          ...defaultProtagonistTag,
+          ...completed,
+        ],
+      };
     });
   });
 
-  const allTags = $derived(
+  /*const allTags = $derived(
     Array.from(new Set(augmentedPosts.flatMap((p) => p.tags))).sort()
+  );*/
+  const SPECIAL_TAGS = [
+    ...STATUS_TAGS,
+    ...SOURCE_TAGS,
+    ...FORMAT_TAGS,
+    ...PROTAGONIST_TAGS,
+    ...PROGRESSION_TAGS,
+    ...availableYearTags,
+    ...BOOK_TAGS,
+  ] as const;
+  
+  const allTags = $derived(
+    Array.from(
+      new Set(
+        augmentedPosts
+          .flatMap((p) => p.tags)
+          .filter((tag) => !SPECIAL_TAGS.includes(tag as (typeof SPECIAL_TAGS)[number]))
+      )
+    ).sort()
   );
+
+	// Match the explorer's alternating default colors. The first (odd) item
+  // in each filter group is dark; the second (even) item is light.
+  const reviewTagColorClasses = $derived.by(() => {
+    const classes: Record<string, string> = {};
+    const assignColors = (tags: readonly string[]) => {
+      tags.forEach((tag, index) => {
+        classes[tag] = index % 2 === 0 ? 'review-tag-dark' : 'review-tag-light';
+      });
+    };
+
+    assignColors(allTags);
+    assignColors(availableProgressionTags);
+    assignColors(availableProtagonistTags);
+    return classes;
+  });
 
   // Initial layout default depends on screen width — guard for SSR.
   const defaultLayout: Layout =
@@ -82,27 +274,112 @@
     return abslink.replace(/\/$/, '').split('/').pop() ?? abslink;
   }
 
+	function parseWordCount(value: string): number | null {
+    if (!value.trim()) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  }
+
   // Read URL state synchronously so we don't flash unfiltered cards on mount.
   function readInitialState(): {
     layout: Layout;
     byRank: boolean;
     activations: Record<string, boolean>;
+    formatActivations: Record<FormatTag, boolean>;
+    protagonistActivations: Record<ProtagonistTag, boolean>;
+    progressionActivations: Record<ProgressionTag, boolean>;
+    yearActivations: Record<string, boolean>;
     searchTerm: string;
     readingList: SvelteSet<string>;
     showReadingList: boolean;
+    completionFilter: CompletionFilter;
+    sourceActivations: Record<SourceTag, boolean>;
+    bookFilter: BookFilter;
+		minWordCount: string;
+    maxWordCount: string;
   } {
     const out = {
       layout: defaultLayout,
       byRank: true,
       activations: {} as Record<string, boolean>,
+      formatActivations: {} as Record<FormatTag, boolean>,
+      protagonistActivations: {} as Record<ProtagonistTag, boolean>,
+      progressionActivations: {} as Record<ProgressionTag, boolean>,
+      yearActivations: {} as Record<string, boolean>,
       searchTerm: '',
       readingList: new SvelteSet<string>(),
       showReadingList: false,
+      completionFilter: 'all' as CompletionFilter,
+			formatActivations: {} as Record<FormatTag, boolean>,
+      sourceActivations: {} as Record<SourceTag, boolean>,
+      bookFilter: 'series' as BookFilter,
+			minWordCount: '',
+      maxWordCount: '',
     };
     if (typeof window === 'undefined') return out;
     const params = new URLSearchParams(window.location.search);
+    if (params.has('source')) out.sourceActivations = {};
     if (params.has('o')) out.byRank = params.get('o') === '1';
     if (params.has('l')) out.layout = params.get('l') as Layout;
+    if (params.has('status')) {
+      const status = params.get('status');
+      if (STATUS_TAGS.includes(status as StatusTag)) {
+        out.completionFilter = status as StatusTag;
+      }
+    }
+    if (params.has('source')) {
+      for (const t of params.get('source')!.split('_').filter(Boolean)) {
+        if (SOURCE_TAGS.includes(t as SourceTag)) {
+          out.sourceActivations[t as SourceTag] = true;
+        }
+      }
+    }
+    if (params.has('source-exclude')) {
+      for (const t of params.get('source-exclude')!.split('_').filter(Boolean)) {
+        if (SOURCE_TAGS.includes(t as SourceTag)) {
+          out.sourceActivations[t as SourceTag] = false;
+        }
+      }
+    }
+    if (params.has('format')) {
+			out.formatActivations = {};
+      for (const t of params.get('format')!.split('_').filter(Boolean)) {        
+        if (FORMAT_TAGS.includes(t as FormatTag)) {
+          out.formatActivations[t as FormatTag] = true;
+        }
+      }
+    }
+    if (params.has('protagonist')) {
+      for (const t of params.get('protagonist')!.split('_').filter(Boolean)) {
+        if (PROTAGONIST_TAGS.includes(t as ProtagonistTag)) {
+          out.protagonistActivations[t as ProtagonistTag] = true;
+        }
+      }
+    }
+    if (params.has('progression')) {
+      for (const t of params.get('progression')!.split('_').filter(Boolean)) {
+        if (PROGRESSION_TAGS.includes(t as ProgressionTag)) {
+          out.progressionActivations[t as ProgressionTag] = true;
+        }
+      }
+    }
+    if (params.has('year')) {
+      const year = params
+        .get('year')!
+        .split('_')
+        .find((tag) => availableYearTags.includes(tag));
+      if (year) out.yearActivations[year] = true;
+    }    
+    if (params.has('book')) {
+      const book = params.get('book');
+      if (book === BOOK_TAG || book === SERIES_TAG) {
+        out.bookFilter = book;
+      }
+    }
+    const minWordCount = params.get('min-words') ?? '';
+    const maxWordCount = params.get('max-words') ?? '';
+    if (parseWordCount(minWordCount) !== null) out.minWordCount = minWordCount;
+    if (parseWordCount(maxWordCount) !== null) out.maxWordCount = maxWordCount;
     if (params.has('include')) {
       for (const t of params.get('include')!.split('_').filter(Boolean)) {
         out.activations[t] = true;
@@ -135,9 +412,28 @@
   let layout = $state<Layout>(initial.layout);
   let byRank = $state(initial.byRank);
   let tagActivations = $state<Record<string, boolean>>({ ...initial.activations });
+  let formatActivations = $state<Record<FormatTag, boolean>>({ ...initial.formatActivations });
+  let protagonistActivations = $state<Record<ProtagonistTag, boolean>>({
+    ...initial.protagonistActivations,
+  });
+  let progressionActivations = $state<Record<ProgressionTag, boolean>>({
+    ...initial.progressionActivations,
+  });
+  let yearActivations = $state<Record<string, boolean>>({ ...initial.yearActivations });
+  let yearDropdownOpen = $state(false);
+  const selectedYear = $derived(
+    Object.entries(yearActivations).find(([, active]) => active)?.[0] ?? ''
+  );
   let searchTerm = $state(initial.searchTerm);
   let readingList = $state<SvelteSet<string>>(initial.readingList);
   let showReadingList = $state(initial.showReadingList);
+  let completionFilter = $state<CompletionFilter>(initial.completionFilter);
+  let sourceActivations = $state<Record<SourceTag, boolean>>({ ...initial.sourceActivations });
+  let bookFilter = $state<BookFilter>(initial.bookFilter);
+  let minWordCount = $state(initial.minWordCount);
+  let maxWordCount = $state(initial.maxWordCount);
+	let minWordCountInput: HTMLInputElement;
+  let maxWordCountInput: HTMLInputElement;
 
   // Sync state → URL whenever any of these change.
   $effect(() => {
@@ -145,6 +441,28 @@
     const params = new URLSearchParams();
     if (!byRank) params.set('o', '0');
     if (layout !== defaultLayout) params.set('l', layout);
+    if (completionFilter !== 'all') params.set('status', completionFilter);
+    if (bookFilter !== 'all') params.set('book', bookFilter);
+  	const minWords = parseWordCount(minWordCount);
+    const maxWords = parseWordCount(maxWordCount);
+    if (minWords !== null) params.set('min-words', String(minWords));
+    if (maxWords !== null) params.set('max-words', String(maxWords));
+
+    const sourceInclude: string[] = [];
+    const sourceExclude: string[] = [];
+    for (const [k, v] of Object.entries(sourceActivations)) {
+      if (v === true) sourceInclude.push(k);
+      else if (v === false) sourceExclude.push(k);
+    }
+    if (sourceInclude.length) params.set('source', sourceInclude.join('_'));
+    if (sourceExclude.length) params.set('source-exclude', sourceExclude.join('_'));
+
+    const activeFormats = Object.entries(formatActivations)
+      .filter(([, active]) => active)
+      .map(([tag]) => tag);
+
+    if (activeFormats.length) params.set('format', activeFormats.join('_'));
+
     const include: string[] = [];
     const exclude: string[] = [];
     for (const [k, v] of Object.entries(tagActivations)) {
@@ -153,13 +471,30 @@
     }
     if (include.length) params.set('include', include.join('_'));
     if (exclude.length) params.set('exclude', exclude.join('_'));
+
+   const activeProtagonists = Object.entries(protagonistActivations)
+      .filter(([, active]) => active)
+      .map(([tag]) => tag);
+    if (activeProtagonists.length) {
+      params.set('protagonist', activeProtagonists.join('_'));
+    }
+
+    const activeProgressions = Object.entries(progressionActivations)
+      .filter(([, active]) => active)
+      .map(([tag]) => tag);
+    if (activeProgressions.length) params.set('progression', activeProgressions.join('_'));
+
+    const activeYears = Object.entries(yearActivations)
+      .filter(([, active]) => active)
+      .map(([tag]) => tag);
+    if (activeYears.length) params.set('year', activeYears.join('_'));
+
     const rlSlugs = Array.from(readingList);
     if (rlSlugs.length) params.set('reading-list', rlSlugs.join('~'));
     const args = params.toString();
     const newUrl = `${location.origin}${location.pathname}${args ? '?' + args : ''}`;
     history.pushState({ path: newUrl }, '', newUrl);
-
-    // Also persist reading list to localStorage
+  
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem('reading-list', JSON.stringify(rlSlugs));
@@ -199,13 +534,80 @@
     }
   }
 
-  function reset() {
+  function clickProtagonistTag(tag: ProtagonistTag) {
+    if (tag in protagonistActivations) {
+      if (protagonistActivations[tag] === true) {
+        protagonistActivations = { ...protagonistActivations, [tag]: false };
+      } else {
+        const next = { ...protagonistActivations };
+        delete next[tag];
+        protagonistActivations = next;
+      }
+    } else {
+      protagonistActivations = { ...protagonistActivations, [tag]: true };
+    }
+  }
+
+  function clickProgressionTag(tag: ProgressionTag) {
+    if (tag in progressionActivations) {
+      if (progressionActivations[tag] === true) {
+        progressionActivations = { ...progressionActivations, [tag]: false };
+      } else {
+        const next = { ...progressionActivations };
+        delete next[tag];
+        progressionActivations = next;
+      }
+    } else {
+      progressionActivations = { ...progressionActivations, [tag]: true };
+    }
+  }
+
+  function clickFormatTag(tag: FormatTag) {
+    if (tag in formatActivations) {
+      if (formatActivations[tag] === true) {
+        formatActivations = { ...formatActivations, [tag]: false };
+      } else {
+        const next = { ...formatActivations };
+        delete next[tag];
+        formatActivations = next;
+      }
+    } else {
+      formatActivations = { ...formatActivations, [tag]: true };
+    }
+  }
+
+  function clickSourceTag(tag: SourceTag) {
+    if (tag in sourceActivations) {
+      if (sourceActivations[tag] === true) {
+        sourceActivations = { ...sourceActivations, [tag]: false };
+      } else {
+        const next = { ...sourceActivations };
+        delete next[tag];
+        sourceActivations = next;
+      }
+    } else {
+      sourceActivations = { ...sourceActivations, [tag]: true };
+    }
+  }
+
+  async function reset() {
     tagActivations = {};
-    //tagActivations = { series: true };
+    protagonistActivations = {};
+    progressionActivations = {};
+    yearActivations = {};
+	minWordCount = '';
+    maxWordCount = '';
     searchTerm = '';
     layout = defaultLayout;
     byRank = true;
     showReadingList = false;
+    completionFilter = 'all';
+    formatActivations = {};
+    sourceActivations = {};
+    bookFilter = SERIES_TAG;
+		await tick();
+    minWordCountInput.value = '';
+    maxWordCountInput.value = '';
   }
 
   // Screenshot export: capture the whole card list (not just the viewport)
@@ -248,9 +650,78 @@
         if (showReadingList && !readingList.has(slugFromAbslink(post.abslink))) {
           return false;
         }
+        if (completionFilter === 'completed' && !post.tags.includes('completed')) {
+          return false;
+        }
+        if (completionFilter === 'ongoing' && !post.tags.includes('ongoing')) {
+          return false;
+        }
+        if (bookFilter === BOOK_TAG && !post.tags.includes(BOOK_TAG)) {
+          return false;
+        }
+        if (bookFilter === SERIES_TAG && !post.tags.includes(SERIES_TAG)) {
+          return false;
+        }
+				const minWords = parseWordCount(minWordCount);
+        const maxWords = parseWordCount(maxWordCount);
+        if (minWords !== null || maxWords !== null) {
+          const wordCount = post.serieswordcount;
+          if (wordCount == null) return false;
+          if (minWords !== null && wordCount < minWords) return false;
+          if (maxWords !== null && wordCount > maxWords) return false;
+        }
+        const includedSources = Object.entries(sourceActivations)
+          .filter(
+            ([tag, active]) =>
+              active === true && availableSourceTags.includes(tag as SourceTag)
+          )
+          .map(([tag]) => tag);
+
+        for (const [tag, active] of Object.entries(sourceActivations)) {
+		  if (!availableSourceTags.includes(tag as SourceTag)) continue;
+          if (active === false && post.tags.includes(tag)) return false;
+        }
+        if (
+          includedSources.length > 0 &&
+          !includedSources.some((tag) => post.tags.includes(tag))
+        ) {
+          return false;
+        }
+        
+		const includedFormats = Object.entries(formatActivations)
+          .filter(
+            ([tag, active]) =>
+              active === true && availableFormatTags.includes(tag as FormatTag)
+          )
+          .map(([tag]) => tag);
+
+        for (const [tag, active] of Object.entries(formatActivations)) {
+          if (!availableFormatTags.includes(tag as FormatTag)) continue;
+          if (active === false && post.tags.includes(tag)) return false;
+        }
+
+        if (
+          includedFormats.length > 0 &&
+          !includedFormats.some((tag) => post.tags.includes(tag))
+        ) {
+          return false;
+        }
         for (const [tag, active] of Object.entries(tagActivations)) {
           if (active === true && !post.tags.includes(tag)) return false;
           if (active === false && post.tags.includes(tag)) return false;
+        }
+        for (const [tag, active] of Object.entries(protagonistActivations)) {
+          if (active === true && !post.tags.includes(tag)) return false;
+          if (active === false && post.tags.includes(tag)) return false;
+        }
+        for (const [tag, active] of Object.entries(progressionActivations)) {
+          if (active === true && !post.tags.includes(tag)) return false;
+          if (active === false && post.tags.includes(tag)) return false;
+        }
+        for (const [tag, active] of Object.entries(yearActivations)) {
+          const year = String(new Date(post.date).getFullYear());
+          if (active === true && year !== tag) return false;
+          if (active === false && year === tag) return false;
         }
         if (words.length) {
           for (const w of words) {
@@ -283,6 +754,27 @@
     if (Object.keys(tagActivations).length === 0) return 'active-nan';
     if (tagActivations[tag] === true) return 'active-true';
     if (tagActivations[tag] === false) return 'active-false';
+    return 'active-undefined';
+  }
+
+  function protagonistChipState(tag: ProtagonistTag): ChipState {
+    if (Object.keys(protagonistActivations).length === 0) return 'active-nan';
+    if (protagonistActivations[tag] === true) return 'active-true';
+    if (protagonistActivations[tag] === false) return 'active-false';
+    return 'active-undefined';
+  }
+
+  function progressionChipState(tag: ProgressionTag): ChipState {
+    if (Object.keys(progressionActivations).length === 0) return 'active-nan';
+    if (progressionActivations[tag] === true) return 'active-true';
+    if (progressionActivations[tag] === false) return 'active-false';
+    return 'active-undefined';
+  }
+
+  function yearChipState(tag: string): ChipState {
+    if (Object.keys(yearActivations).length === 0) return 'active-nan';
+    if (yearActivations[tag] === true) return 'active-true';
+    if (yearActivations[tag] === false) return 'active-false';
     return 'active-undefined';
   }
 
@@ -342,19 +834,52 @@
     window.addEventListener('keypress', handler);
     return () => window.removeEventListener('keypress', handler);
   });
+
+  type ChipState = 'active-true' | 'active-false' | 'active-undefined' | 'active-nan';
+
+  function chipState(active: boolean, anySelected: boolean): ChipState {
+    if (active) return 'active-true';
+    return anySelected ? 'active-undefined' : 'active-false';
+  }
+  
+  function sourceChipState(tag: SourceTag): ChipState {
+    if (Object.keys(sourceActivations).length === 0) return 'active-undefined';
+    if (sourceActivations[tag] === true) return 'active-true';
+    if (sourceActivations[tag] === false) return 'active-false';
+    return 'active-undefined';
+  }
+
+  function formatChipState(tag: FormatTag): ChipState {
+    if (Object.keys(formatActivations).length === 0) return 'active-undefined';
+    if (formatActivations[tag] === true) return 'active-true';
+    if (formatActivations[tag] === false) return 'active-false';
+    return 'active-undefined';
+  }
+  
+  function completionChipState(value: CompletionFilter): ChipState {
+    return chipState(completionFilter === value, completionFilter !== 'all');
+  }
+  
+  function bookChipState(value: BookFilter): ChipState {
+    return chipState(bookFilter === value, bookFilter !== 'all');
+  }
+
+	function seriesWordCountLabel(post: Post): string {
+    return post.serieswordcount == null
+      ? ''
+      : `${formatWordCount(post.serieswordcount)} words`;
+  }
 </script>
 
 <div id="preamble">
   <p>
-    {totalReviews} reviews with <em>my</em> rankings based on what I personally enjoy
-    reading. You may have opposite tastes. The below inputs should make finding
-    something easier. If you have questions, recommendations, or want to know when
-    new reviews or releases are out, join the
-    <a
-      href="https://discord.gg/tfn4HVEaDz"
+    Total of {totalReviews} reviews with <em>my</em> rankings based on what I usually enjoy
+    reading, slice-of-life with some progression. I have a ton of filters based on what I usually look for to limit the many options. 
+	If you want to chat about these books or have any recoomendations based on what I have reviewed, I'm <a
+      href="https://www.reddit.com/user/Confident_Mulberry29/"
       class="font-bold"
-      style="color: #7289da"
-    >discord</a>.
+      style="color: #ff8b60"
+    >Confident_Mulberry29</a> on reddit.
   </p>
 </div>
 
@@ -401,15 +926,153 @@
         >Recent</span
       >
     </label>
-    <input
-      oninput={(e) => (searchTerm = (e.currentTarget as HTMLInputElement).value)}
-      type="text"
-      id="search-input"
-      name="search"
-      bind:value={searchTerm}
-      class="bg-green-700 rounded-md text-green-400 m-2 focus:text-green-100 outline-none focus:ring-2 focus:ring-green-400"
-      placeholder="Search..."
-    />
+
+    <div class="inline-flex items-center m-2 overflow-hidden rounded-md">
+      <button
+        type="button"
+        class={`px-4 py-2 rounded-l-md text-lg sm:text-base cursor-pointer ${
+          bookFilter === 'series'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() => (bookFilter = 'series')}
+      >
+        Series
+      </button>
+      <button
+        type="button"
+        class={`px-4 py-2 rounded-r-md text-lg sm:text-base cursor-pointer ${
+          bookFilter === 'book'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() => (bookFilter = 'book')}
+      >
+        Book
+      </button>
+    </div>
+
+    <div class="inline-flex items-center m-2 overflow-hidden rounded-md">
+      <button
+        type="button"
+        class={`px-4 py-2 rounded-l-md text-lg sm:text-base cursor-pointer ${
+          completionFilter === 'all'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() => (completionFilter = 'all')}
+      >
+        All
+      </button>
+      <button
+        type="button"
+        class={`px-4 py-2 text-lg sm:text-base cursor-pointer ${
+          completionFilter === 'completed'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() =>
+          (completionFilter = completionFilter === 'completed' ? 'all' : 'completed')}
+      >
+        Completed
+      </button>
+      <button
+        type="button"
+        class={`px-4 py-2 rounded-r-md text-lg sm:text-base cursor-pointer ${
+          completionFilter === 'ongoing'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() =>
+          (completionFilter = completionFilter === 'ongoing' ? 'all' : 'ongoing')}
+      >
+        Ongoing
+      </button>
+    </div>
+
+   <div class="year-filter-group">
+      <button
+        type="button"
+        class={`year-filter-all ${selectedYear ? '' : 'is-active'}`}
+        aria-pressed={!selectedYear}
+        onclick={() => {
+          yearActivations = {};
+          yearDropdownOpen = false;
+        }}
+      >
+        All
+      </button>
+      <div class="year-dropdown">
+      <button
+        id="year-filter"
+        type="button"
+        class={`year-dropdown-trigger inline-flex items-center gap-2 ${selectedYear ? 'is-active' : ''}`}
+         aria-haspopup="listbox"
+        aria-expanded={yearDropdownOpen}
+        onclick={() => (yearDropdownOpen = !yearDropdownOpen)}
+      >
+        {selectedYear || 'Years'}
+        <svg
+          class="h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {#if yearDropdownOpen}
+        <div class="year-dropdown-options" role="listbox" aria-labelledby="year-filter">          
+          {#each availableYearTags as year}
+            <button
+              type="button"
+              role="option"
+              aria-selected={selectedYear === year}
+              onclick={() => {
+                yearActivations = { [year]: true };
+                yearDropdownOpen = false;
+              }}
+            >
+              {year}
+            </button>
+          {/each}
+        </div>
+      {/if}
+     </div>
+    </div>
+	 <div class="year-filter-group">
+		<div class="word-count-control">  		
+        <input
+					bind:this={minWordCountInput}
+          type="number"
+          min="0"
+          step="10000"
+					value={minWordCount}
+  				oninput={(event) => (minWordCount = event.currentTarget.value)}
+          aria-label="Minimum word count"
+    			placeholder="Min"
+					class="word-count-input word-count-min"
+        />
+				<span class="word-count-label">Word Count</span>
+        <input
+					bind:this={maxWordCountInput}
+          type="number"
+          min="0"
+          step="10000"
+					value={maxWordCount}
+				  oninput={(event) => (maxWordCount = event.currentTarget.value)}
+          aria-label="Maximum word count"
+    			placeholder="Max"
+          class="word-count-input word-count-max"
+        />
+      </div>
+    </div>
+
     {#if readingList.size > 0}
       <div class="inline-flex items-center m-2 overflow-hidden rounded-md">
         <button
@@ -450,17 +1113,74 @@
         </button>
       </div>
     {/if}
-    <button
+  </div>
+</div>
+
+<div id="tags" class="tag-list max-w-7xl mx-auto mb-5">  
+  <div class="source-filter-group" role="group" aria-label="Filter by source">
+		<button
       type="button"
-      class="inline-flex items-center m-2 px-4 py-2 bg-accent-700 hover:bg-accent-600 rounded-md cursor-pointer text-cream-200 text-lg sm:text-base"
-      onclick={reset}
+      class={`filter-chip source-chip ${
+        Object.keys(sourceActivations).length === 0
+          ? 'active-true'
+          : 'active-undefined'
+      }`}
+      aria-pressed={Object.keys(sourceActivations).length === 0}
+      onclick={() => (sourceActivations = {})}
     >
-      Reset
+      <span>All</span>
     </button>
+    {#each availableSourceTags as tag}
+      <button
+        type="button"
+        class={`filter-chip source-chip ${sourceChipState(tag)}`}
+        onclick={() => clickSourceTag(tag)}
+      >
+        <span>{SOURCE_LABELS[tag]}</span>
+      </button>
+    {/each}
+  </div>
+
+  <div class="format-filter-group" role="group" aria-label="Filter by format">
+		<button
+      type="button"
+      class={`filter-chip format-chip ${
+        Object.keys(formatActivations).length === 0
+          ? 'active-true'
+          : 'active-undefined'
+      }`}
+      aria-pressed={Object.keys(formatActivations).length === 0}
+      onclick={() => (formatActivations = {})}
+    >
+      <span>All</span>
+    </button>
+    {#each availableFormatTags as tag}
+      <button
+        type="button"
+        class={`filter-chip format-chip ${formatChipState(tag)} hover:cursor-pointer`}
+        onclick={() => clickFormatTag(tag)}
+      >
+        <span>{FORMAT_LABELS[tag]}</span>
+      </button>
+    {/each}
+  </div>
+
+	<div class="justify-center flex flex-wrap items-center">
+		<input
+      oninput={(e) => (searchTerm = (e.currentTarget as HTMLInputElement).value)}
+      type="text"
+      id="search-input"
+      name="search"
+      bind:value={searchTerm}
+      class="bg-green-700 rounded-md text-green-400 m-2 focus:text-green-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-400"
+      placeholder="Search..."
+    />
 
     <button
       type="button"
-      class="inline-flex items-center gap-2 m-2 px-4 py-2 h-[38px] sm:h-[38px] bg-green-700 hover:bg-green-500 disabled:hover:bg-green-700 rounded-md cursor-pointer disabled:cursor-default text-green-50 disabled:opacity-50"
+      class="inline-flex items-center gap-2 m-2 px-4 py-2 h-[38px] sm:h-[38px] bg-green-700 
+			hover:bg-green-500 disabled:hover:bg-green-700 !rounded-md cursor-pointer 
+			disabled:cursor-default text-green-50 disabled:opacity-50"
       onclick={screenshot}
       disabled={capturing || visiblePosts.length === 0}
       title="Screenshot"
@@ -503,11 +1223,20 @@
           <circle cx="12" cy="13" r="4" />
         </svg>
       {/if}
-    </button>    
-  </div>
+    </button> 
+
+    <button
+      type="button"
+      class="inline-flex items-center m-2 px-4 py-2 bg-accent-600/90 hover:bg-accent-500 
+		!rounded-md cursor-pointer text-cream-200 text-lg sm:text-base"
+      onclick={reset}
+    >
+      Reset
+    </button>
+	</div>
 </div>
 
-<div id="tags" class="tag-list max-w-7xl mx-auto mt-5 mb-5">
+<div id="tags" class="tag-list max-w-7xl mx-auto mt-5 ">
   {#each allTags as tag (tag)}
     <button
       type="button"
@@ -516,6 +1245,26 @@
     >
       <span>{tag}</span>
     </button>
+  {/each}
+
+  {#each availableProgressionTags as tag}
+    <button
+      type="button"
+      class={`filter-chip progression-chip ${progressionChipState(tag)} hover:cursor-pointer text-base sm:text-sm`}
+      onclick={() => clickProgressionTag(tag)}
+    >
+       <span>{PROGRESSION_LABELS[tag]}</span>
+    </button>
+  {/each}
+
+  {#each availableProtagonistTags as tag}
+    <button
+       type="button"
+       class={`filter-chip protagonist-chip ${protagonistChipState(tag)} hover:cursor-pointer text-base sm:text-sm`}
+       onclick={() => clickProtagonistTag(tag)}
+     >
+       <span>{PROTAGONIST_LABELS[tag]}</span>
+     </button>
   {/each}
 </div>
 
@@ -526,6 +1275,7 @@
     <ReviewCard
       {post}
       {layout}
+			tagColorClasses={reviewTagColorClasses}
       isBookmarked={readingList.has(slugFromAbslink(post.abslink))}
       onToggleBookmark={layout === 'tier' ? undefined : toggleBookmark}
     />

@@ -8,13 +8,14 @@ auth: nobody13
 categories: [reviews]
 review: S
 weight: 000001
+serieswordcount: 800000
 links:
     amazon: https://www.amazon.com/dp/B09M2R6QLF
     royal_road: https://www.royalroad.com/fiction/21220/mother-of-learning
     # goodreads: https://www.goodreads.com/en/book/show/59661342-mother-of-learning-1
     audible: https://www.audible.com/pd/Mother-of-Learning-Arc-1-Audiobook/B09MXJQG1Z
 aliases: [/reviews/mol]
-tags: [series, crafting,  magic-school, time-loops, completed]
+tags: [series, crafting,  magic-school, time-loops, female-lead, completed]
 ---
 
 I grew up on the Belgariad, graduated through Harry Potter to the Wheel of Time, conquered Malazan, was crushed by the Farseer Trilogy, and generally docked my ship at every fantasy port I could find.

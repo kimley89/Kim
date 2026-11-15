@@ -1,15 +1,49 @@
 
 <script lang="ts">
   import type { Post } from '../lib/types';
+  import {
+    isSquareReviewTag,
+    PROGRESSION_TAGS,
+    PROTAGONIST_TAGS,
+    sortReviewTags,
+    type ProgressionTag,
+    type ProtagonistTag,
+  } from '../lib/review-tags';
 
   type Props = {
     post: Post;
     layout: 'wide' | 'cover' | 'tier';
+    tagColorClasses?: Record<string, string>;
     isBookmarked?: boolean;
     onToggleBookmark?: (slug: string) => void;
   };
 
-  let { post, layout, isBookmarked = false, onToggleBookmark }: Props = $props();
+  let {
+    post,
+    layout,
+    tagColorClasses = {},
+    isBookmarked = false,
+    onToggleBookmark,
+  }: Props = $props();
+
+  function tagShapeClass(tag: string): string {
+    return isSquareReviewTag(tag) ? 'rounded' : 'rounded-full';
+  }
+
+  function formatSeriesWordCount(count: number): string {
+    return new Intl.NumberFormat('en-US').format(count);
+  }
+
+  function roundedTagColorClass(tag: string): string {
+    if (isSquareReviewTag(tag)) return '';
+    if (PROGRESSION_TAGS.includes(tag as ProgressionTag)) {
+      return 'review-tag-progression';
+    }
+    if (PROTAGONIST_TAGS.includes(tag as ProtagonistTag)) {
+      return 'review-tag-protagonist';
+    }
+    return 'review-tag-generic';
+  }
 
   // Explicit sizes avoid auto sizing a newly mounted card before its grid
   // has laid out, which can request the largest candidate during transitions.
@@ -226,16 +260,42 @@
                   <p class="text-lg text-green-300 px-3">{post.sentence}</p>
                   <div>
                     <div class="mb-3">
-                      <ul class="flex flex-wrap text-sm sm:text-xs font-medium -m-1 justify-center">
-                        {#each post.tags as tag (tag)}
+                      <ul class="review-card-tags flex flex-wrap text-sm sm:text-xs font-medium -m-1 justify-center">
+                        {#each sortReviewTags(
+                          post.tags.filter(
+                            (tag) =>
+                              tag !== 'book' &&
+                              tag !== 'series' &&
+                              !isSquareReviewTag(tag)
+                          )
+                        ) as tag (tag)}
                           <li
-                            class="m-1 inline-flex text-center py-1 px-3 rounded-full tag-{tag}"
+                            class="m-1 inline-flex text-center py-1 px-3 {tagShapeClass(tag)} {tagColorClasses[tag] ?? ''} tag-{tag}"
+                          >
+                            {tag === 'royal-road' ? 'royal road' : tag}
+                          </li>
+                        {/each}                        
+                        {#each sortReviewTags(
+                          post.tags.filter(
+                            (tag) =>
+                              tag !== 'book' &&
+                              tag !== 'series' &&
+                              isSquareReviewTag(tag)
+                          )
+                        ) as tag (tag)}
+                          <li
+                            class="square-review-tag m-1 inline-flex text-center py-1 px-3 {tagShapeClass(tag)} {tagColorClasses[tag] ?? ''} tag-{tag}"
                           >
                             {tag}
                           </li>
                         {/each}
-                      </ul>
-                    </div>
+                        {#if post.serieswordcount != null}
+                          <li class="square-review-tag tag-wordcount rounded m-1 inline-flex text-center py-1 px-3">
+                            {formatSeriesWordCount(post.serieswordcount)} words
+                          </li>
+                        {/if}
+                      </ul>                      
+                    </div>                    
                   </div>
                 </div>
               {/if}
