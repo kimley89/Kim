@@ -5,7 +5,7 @@
  * To update: modify src/config.ts, then rebuild.
  * The Vite plugin (scripts/css-config-plugin.mjs) injects these values.
  */
-
+ 
 :root {
   /* Domain and paths - set by build-time injection */
   --site-domain: "https://kimley89.github.io/Kim";
