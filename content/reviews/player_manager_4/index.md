@@ -1,11 +1,15 @@
 ---
+series_name: "Player Manager"
+series_order: 4
 title: "A Review of Ted Steel's 'Player Manager Book 4'"
+short_title: "PM Book 4"
 description: "4"
 date: 2026-07-13
 auth: Ted Steel
 categories: [book-reviews]
 review: D
 weight: 400001
+serieswordcount: 4000000
 name: "Player Manager Book 4"
 links:
     amazon: https://www.amazon.com/Player-Manager-Sports-Progression-Fantasy-ebook/dp/B0CCJYPD2Z
@@ -15,9 +19,8 @@ aliases: [/book-reviews/player_manager_4]
 tags: [completed, litrpg]
 sentence: "444"
 search_terms: "Soccer Supremo Max Best Football Manager Championship Manager"
+read_through: Player Manager and Soccer Supremo Completed, DoF Book 1
 ---
-
-*As of writing this, I've read the first two books.*
 
 ## Blurb
 

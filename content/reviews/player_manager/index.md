@@ -1,11 +1,15 @@
 ---
+series_name: "Player Manager"
+series_order: 1
 title: "A Review of Ted Steel's 'Player Manager'"
+short_title: "PM Book 1"
 description: "A Football Manager obsessive gets the game's scouting interface for real — a grounded, low-fantasy litrpg where the powers are easy and the respect is not."
 date: 2026-07-13
 auth: Ted Steel
 categories: [book-reviews]
 review: A
 weight: 100001
+serieswordcount: 4000000
 name: "Player Manager"
 links:
     amazon: https://www.amazon.com/Player-Manager-Sports-Progression-Fantasy-ebook/dp/B0CCJYPD2Z
@@ -15,6 +19,7 @@ aliases: [/book-reviews/player_manager]
 tags: [completed, series, litrpg, male-lead, female-lead]
 sentence: "A progression fantasy set in the modern world, perfect for fans of Football Manager, the FIFA games, and last-minute disallowed goals."
 search_terms: "Soccer Supremo Max Best Football Manager Championship Manager"
+read_through: Player Manager and Soccer Supremo Completed, DoF Book 1
 ---
 
 *As of writing this, I've read the first two books.*

@@ -31,6 +31,8 @@
 	import { formatWordCount } from '../../lib/wordcount';
 
   type Layout = 'wide' | 'cover' | 'tier';
+	type SortOrder = 'rank' | 'recent' | 'wordcount-desc' | 'wordcount-asc';
+
   type Props = {
     posts: Post[];
     totalReviews: number;
@@ -283,7 +285,7 @@
   // Read URL state synchronously so we don't flash unfiltered cards on mount.
   function readInitialState(): {
     layout: Layout;
-    byRank: boolean;
+    sortOrder: SortOrder;
     activations: Record<string, boolean>;
     formatActivations: Record<FormatTag, boolean>;
     protagonistActivations: Record<ProtagonistTag, boolean>;
@@ -300,7 +302,7 @@
   } {
     const out = {
       layout: defaultLayout,
-      byRank: true,
+      sortOrder: 'rank' as SortOrder,
       activations: {} as Record<string, boolean>,
       formatActivations: {} as Record<FormatTag, boolean>,
       protagonistActivations: {} as Record<ProtagonistTag, boolean>,
@@ -319,7 +321,18 @@
     if (typeof window === 'undefined') return out;
     const params = new URLSearchParams(window.location.search);
     if (params.has('source')) out.sourceActivations = {};
-    if (params.has('o')) out.byRank = params.get('o') === '1';
+		if (params.has('o')) {
+      out.sortOrder = params.get('o') === '1' ? 'rank' : 'recent';
+    }
+    const wordCountSort = params.get('sort');
+		if (wordCountSort === 'wordcount-asc') {
+      out.sortOrder = 'wordcount-asc';
+    } else if (
+      wordCountSort === 'wordcount-desc' ||
+      wordCountSort === 'wordcount'
+    ) {
+      out.sortOrder = 'wordcount-desc';
+    }
     if (params.has('l')) out.layout = params.get('l') as Layout;
     if (params.has('status')) {
       const status = params.get('status');
@@ -410,7 +423,7 @@
   const initial = readInitialState();
 
   let layout = $state<Layout>(initial.layout);
-  let byRank = $state(initial.byRank);
+  let sortOrder = $state<SortOrder>(initial.sortOrder);
   let tagActivations = $state<Record<string, boolean>>({ ...initial.activations });
   let formatActivations = $state<Record<FormatTag, boolean>>({ ...initial.formatActivations });
   let protagonistActivations = $state<Record<ProtagonistTag, boolean>>({
@@ -439,7 +452,9 @@
   $effect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams();
-    if (!byRank) params.set('o', '0');
+    if (sortOrder === 'recent') params.set('o', '0');
+    if (sortOrder === 'wordcount-desc') params.set('sort', 'wordcount-desc');
+    if (sortOrder === 'wordcount-asc') params.set('sort', 'wordcount-asc');
     if (layout !== defaultLayout) params.set('l', layout);
     if (completionFilter !== 'all') params.set('status', completionFilter);
     if (bookFilter !== 'all') params.set('book', bookFilter);
@@ -599,7 +614,7 @@
     maxWordCount = '';
     searchTerm = '';
     layout = defaultLayout;
-    byRank = true;
+    sortOrder = 'rank';
     showReadingList = false;
     completionFilter = 'all';
     formatActivations = {};
@@ -731,7 +746,16 @@
         return true;
       })
       .sort((a, b) => {
-        if (layout === 'tier' || byRank) return a.weight - b.weight;
+        if (layout === 'tier' || sortOrder === 'rank') {
+          return a.weight - b.weight;
+        }
+        if (sortOrder === 'wordcount-desc' || sortOrder === 'wordcount-asc') {
+          const aCount = a.serieswordcount ?? 0;
+          const bCount = b.serieswordcount ?? 0;
+          const wordCountDiff =
+            sortOrder === 'wordcount-desc' ? bCount - aCount : aCount - bCount;
+          return wordCountDiff || a.weight - b.weight || b.date.localeCompare(a.date);
+        }
         return a.date < b.date ? 1 : -1;
       });
   });
@@ -879,7 +903,7 @@
       href="https://www.reddit.com/user/Confident_Mulberry29/"
       class="font-bold"
       style="color: #ff8b60"
-    >Confident_Mulberry29</a> on reddit.
+    >Confident_Mulberry29</a> on reddit, talk to meee :D
   </p>
 </div>
 
@@ -908,24 +932,66 @@
       </label>
     {/each}
    
-    <label
-      for="sort-order"
-      class="pl-4 inline-flex items-center p-2 rounded-md cursor-pointer"
+    <div
+      role="group"
+      aria-label="Sort reviews"
+      class="inline-flex items-center m-2 overflow-hidden rounded-md"
     >
-      <input
-        id="sort-order"
-        type="checkbox"
-        checked={byRank}
-        class="hidden peer"
-        onclick={(e) => (byRank = (e.currentTarget as HTMLInputElement).checked)}
-      />
-      <span class="px-4 py-2 rounded-l-md text-lg sm:text-base {byRank ? 'bg-green-500 text-green-50' : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'}"
-        >Rank</span
+      <button
+        type="button"
+        aria-pressed={sortOrder === 'rank'}
+        class={`px-4 py-2 rounded-l-md text-lg sm:text-base cursor-pointer ${
+          sortOrder === 'rank'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+       }`}
+        onclick={() => (sortOrder = 'rank')}
       >
-      <span class="px-4 py-2 rounded-r-md text-lg sm:text-base {byRank ? 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50' : 'bg-green-500 text-green-50'}"
-        >Recent</span
+        Rank
+      </button>
+      <button
+        type="button"
+        aria-pressed={sortOrder === 'recent'}
+        class={`px-4 py-2 text-lg sm:text-base cursor-pointer ${
+          sortOrder === 'recent'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() => (sortOrder = 'recent')}
       >
-    </label>
+        Recent
+      </button>
+      <button
+        type="button"
+        aria-pressed={sortOrder === 'wordcount-desc' || sortOrder === 'wordcount-asc'}
+				aria-label={
+          sortOrder === 'wordcount-asc'
+            ? 'Word Count ascending'
+            : sortOrder === 'wordcount-desc'
+              ? 'Word Count descending'
+              : 'Sort by Word Count'
+        }
+        disabled={layout === 'tier'}
+        class={`px-4 py-2 rounded-r-md text-lg sm:text-base ${
+          layout === 'tier'
+            ? 'cursor-not-allowed opacity-50'
+            : 'cursor-pointer'
+        } ${
+          sortOrder === 'wordcount-desc' || sortOrder === 'wordcount-asc'
+            ? 'bg-green-500 text-green-50'
+            : 'bg-green-700 text-green-400 hover:bg-green-500 hover:text-green-50'
+        }`}
+        onclick={() =>
+          (sortOrder =
+            sortOrder === 'wordcount-desc' ? 'wordcount-asc' : 'wordcount-desc')}
+      >
+        {sortOrder === 'wordcount-desc'
+          ? 'Word Count ↓'
+          : sortOrder === 'wordcount-asc'
+            ? 'Word Count ↑'
+            : 'Word Count'}
+      </button>
+    </div>
 
     <div class="inline-flex items-center m-2 overflow-hidden rounded-md">
       <button
@@ -1294,6 +1360,7 @@
            container, which never scrolls, so the label would never stick. -->
       <section
         class="tier-row flex rounded-md overflow-clip bg-green-800/50"
+		class:tier-row--compact={group.posts.length <= 4}
         aria-label="Tier {group.tier}"
       >
         <div

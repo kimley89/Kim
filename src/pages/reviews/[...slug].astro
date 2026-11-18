@@ -30,6 +30,33 @@ export async function getStaticPaths() {
 const { entry, allEntries } = Astro.props;
 const { Content } = await render(entry);
 const r = entry.data.review;
+const seriesReviews = entry.data.series_name
+  ? allEntries
+      .filter(
+        (review) =>
+          review.data.series_name === entry.data.series_name &&
+          review.data.series_order != null,
+      )
+      .sort(
+        (a, b) =>
+          a.data.series_order! - b.data.series_order! ||
+          a.data.name.localeCompare(b.data.name) ||
+          a.id.localeCompare(b.id),
+      )
+  : [];
+const seriesIndex = seriesReviews.findIndex((review) => review.id === entry.id);
+const previousReview = seriesIndex > 0 ? seriesReviews[seriesIndex - 1] : undefined;
+const nextReview =
+  seriesIndex >= 0 && seriesIndex < seriesReviews.length - 1
+    ? seriesReviews[seriesIndex + 1]
+    : undefined;
+const [year, , day] = entry.data.date.toISOString().slice(0, 10).split('-');
+const monthName = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  timeZone: 'UTC',
+})
+  .format(entry.data.date)
+const dateString = `${day}-${monthName}-${year}`;
 
 const ogImage = `/og/${entry.id}.webp`;
 const ogDescription =
@@ -39,19 +66,18 @@ const ogDescription =
 
 const RATING_TEXT = {
   'π': 'My stuff. I hope you like it.',
-  S: 'So good, has a home in my head and my heart :)',
-  A: 'Amazing, definitely recommended!',
-  B: 'Great read, might be more niche.',
-  C: 'Decent read.',
-  D: 'Tried but not for me.',
-  E: 'Disappointed.',
-  F: 'Argh, was so excited to find a new amazing read.',
-  G: 'Waiting to start once more chapters get written.',
+  S: 'S Tier: Has a place in my heart :)',
+  A: 'A Tier: Amazing, definitely recommended!',
+  B: 'B Tier: Great read, might be niche.',
+  C: 'C Tier: Decent read.',
+  D: 'D Tier: Tried but not for me.',
+  E: 'E Tier: Disappointed.',
+  F: 'F Tier: Argh, was so excited :/',
+  G: 'Waiting to start, collecting chapters.',
 } as const;
 const ratingText = RATING_TEXT[r];
 
 const titleCase = (s: string) => s.replaceAll('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-const compactControlSize = 'text-sm sm:text-xs font-medium'  ;
 
 const similarReviews = getSimilarReviews(entry, allEntries, 4);
 const hasBookTag = entry.data.tags.some((tag) => BOOK_TAGS.includes(tag as (typeof BOOK_TAGS)[number]));
@@ -146,7 +172,7 @@ const reviewMarkdown =
 <BaseLayout title={entry.data.name} description={ogDescription} image={ogImage} type="article">
   <div class="content content blog-post relative">
     <div class="section-header blog">
-      <h1 class={`title rating rating-${r} text-center`}>{entry.data.name}</h1>
+      <h1 class={`title rating rating-${r} text-center`}>{entry.data.name}</h1>      
     </div>
     <div class="max-w-4xl mx-auto mt-4 mb-16">
       <article class={`w-full review-summary bg-green-800 rounded-xl review-${r}`}>
@@ -158,66 +184,126 @@ const reviewMarkdown =
               height={800}
               class="rounded-l-xl block flex-none"
             />
-            <div class="flex flex-col justify-between p-4 sm:p-8 text-center md:text-left">
+            <div class="flex flex-col justify-between md:justify-start md:gap-2 p-4 sm:p-8 text-center">
               <div class="rating">
-                <p class={`larger rating-${r}`}>{ratingText}</p>
+                <p class={`larger rating-${r}`}>
+                  {ratingText.includes(':') ? (
+                    <>
+                      {ratingText.slice(0, ratingText.indexOf(':') + 1)}
+                      <br />
+                      {ratingText.slice(ratingText.indexOf(':') + 1).trim()}
+                    </>
+                  ) : ratingText}
+                </p>
               </div>
-              <p class="text-lg text-green-400">{entry.data.description}</p>
-              <ul class="review-card-tags flex flex-col gap-2 text-xs font-medium justify-center md:justify-start">
-                <li class="w-full">
-                  <ul class="flex flex-wrap gap-2">
-                    {reviewTags.filter((tag) => !isSquareReviewTag(tag)).map((tag) => (
-                      <li class={`inline-flex text-center rounded-full ${tagColorClasses[tag] ?? ''} tag-${tag}`}>
-                        <a class="review-tag-link no-under" href={filterUrlForTag(tag)}>
-                          {tag === 'royal-road' ? 'royal road' : tag}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-                <li class="w-full">
-                  <ul class="flex flex-wrap gap-2">
-                    {reviewTags.filter(isSquareReviewTag).map((tag) => (
-                      <li class={`square-review-tag inline-flex text-center rounded ${tagColorClasses[tag] ?? ''} tag-${tag}`}>
-                        <a class="review-tag-link no-under" href={filterUrlForTag(tag)}>
-                          {tag}
-                        </a>
-                      </li>
-                    ))}
-                    {entry.data.serieswordcount != null && (
-                      <li class="square-review-tag tag-wordcount inline-flex text-center rounded">
-                        <a
-                          class="review-tag-link no-under"
-                          href={wordCountFilterUrl(entry.data.serieswordcount)}
-                        >
-                          {formatWordCount(entry.data.serieswordcount)} words
-                        </a>
-                      </li>
-                    )}
-                  </ul>
-                </li>
-              </ul>
-              <div class="text-base flex flex-wrap justify-center md:justify-start">
-                {Object.entries(entry.data.links).map(([name, link]) => (
-                  <a
-                    class={`no-under btn-xs ${compactControlSize} text-white bg-${r}-700 hover:bg-${r}-600 mt-2 mr-2`}
-                    href={link}
-                  >
-                    <span>{titleCase(name)}</span>
-                    <svg
-                      class="w-3 h-3 fill-current shrink-0 ml-2"
-                      viewBox="0 0 12 12"
-                      xmlns="http://www.w3.org/2000/svg"
+              <p class="text-lg text-green-400 flex-1 flex items-center">
+                {entry.data.description}
+              </p>
+              <div class="mt-auto pt-4 md:pt-0 flex flex-col gap-3">
+                <ul class="review-card-tags flex flex-col gap-2 text-xs font-medium justify-center md:justify-start">
+                  <li class="w-full">
+                    <ul class="flex flex-wrap justify-center md:justify-start gap-2">
+                      {reviewTags.filter((tag) => !isSquareReviewTag(tag)).map((tag) => (
+                        <li class={`inline-flex text-center rounded-full ${tagColorClasses[tag] ?? ''} tag-${tag}`}>
+                          <a class="review-tag-link no-under" href={filterUrlForTag(tag)}>
+                            {tag === 'royal-road' ? 'royal road' : tag}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                  <li class="w-full">
+                    <ul class="flex flex-wrap justify-center md:justify-start gap-2">
+                      {reviewTags.filter(isSquareReviewTag).map((tag) => (
+                        <li class={`square-review-tag inline-flex text-center rounded ${tagColorClasses[tag] ?? ''} tag-${tag}`}>
+                          <a class="review-tag-link no-under" href={filterUrlForTag(tag)}>
+                            {tag}
+                          </a>
+                        </li>
+                      ))}
+                      {entry.data.serieswordcount != null && (
+                        <li class="square-review-tag tag-wordcount inline-flex text-center rounded">
+                          <a
+                            class="review-tag-link no-under"
+                            href={wordCountFilterUrl(entry.data.serieswordcount)}
+                          >
+                            {formatWordCount(entry.data.serieswordcount)} words
+                          </a>
+                        </li>
+                      )}
+                    </ul>
+                  </li>
+                </ul>
+                <div class="text-base flex flex-wrap justify-center md:justify-start">
+                  {Object.entries(entry.data.links).map(([name, link]) => (
+                    <a
+                      class={`underline no-under btn-xs font-medium text-lg! sm:text-sm! px-2! py-1.5! sm:py-1! text-white bg-${r}-700 hover:bg-${r}-600 mt-2 mr-2`}
+                      href={link}
                     >
-                      <path d="M6 5H0v2h6v4l6-5-6-5z" />
-                    </svg>
-                  </a>
-                ))}
+                      <span>{titleCase(name)}</span>                      
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </article>
+      {seriesReviews.length > 1 && (
+        <div class="mx-auto mt-4 w-full max-w-[42rem]">
+          <nav
+            aria-label={`${entry.data.series_name} book reviews`}
+            class="series-review-paginator grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-3"
+          >
+            <div class="flex min-w-0 items-baseline justify-start">
+              {previousReview && (
+                <a
+                  href={withBase(`/reviews/${previousReview.id}/`)}
+                  rel="prev"
+                  class="inline-flex w-fit whitespace-nowrap bg-colour-800 rounded-md px-2 py-0.5 text-xl! sm:text-base! text-green-300! shadow-none transition-colors hover:bg-green-500 hover:text-green-50! hover:shadow-none"
+                >
+                  ← Prev
+                </a>
+              )}
+            </div>
+
+            <div class="series-review-scroll min-w-0 overflow-x-auto pb-1 [&::-webkit-scrollbar-thumb]:cursor-pointer">
+              <ul class="m-0 flex w-max min-w-full list-none items-baseline justify-start gap-0 p-0">
+                {seriesReviews.map((review) => (
+                  <li class="m-0 shrink-0 list-none p-0">
+                    <a
+                      href={withBase(`/reviews/${review.id}/`)}
+                      aria-current={review.id === entry.id ? 'page' : undefined}
+                      title={review.data.name}
+                      class="inline-flex w-fit whitespace-nowrap rounded-md px-1.5 py-0.5 text-xl! sm:text-base! text-green-300! underline shadow-none transition-colors hover:bg-green-500 hover:text-green-50! hover:shadow-none"
+                    >
+                      {review.data.short_title ?? review.data.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="flex min-w-0 items-baseline justify-end">
+              {nextReview && (
+                <a
+                  href={withBase(`/reviews/${nextReview.id}/`)}
+                  rel="next"
+                  class="inline-flex w-fit whitespace-nowrap bg-colour-800 rounded-md px-2 py-0.5 text-xl! sm:text-base! text-green-300! shadow-none transition-colors hover:bg-green-500 hover:text-green-50! hover:shadow-none"
+                >
+                  Next →
+                </a>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
+      <div class="mt-8 text-left">
+        <p class = "text-green-200!" >Read On:    {dateString}</p>
+        {entry.data.read_through && (
+          <p class = "text-green-200!">Read To:    {entry.data.read_through}</p>
+        )}
+      </div>
     </div>
     <div class="max-w-xl2 mx-auto review-article"><Content /></div>
     <div class="mt-20">

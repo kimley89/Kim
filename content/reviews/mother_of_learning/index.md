@@ -1,4 +1,6 @@
 ---
+series_name: "Mother of Learning"
+series_order: 1
 title:  "A Review of nobody13's Mother of Learning. Time loops with a smart protagonist, done so very, very right."
 name: "Mother of Learning"
 description: "Progression fantasy, and time loops done right. Smart MC, great plot, varied magic systems. Groundhog day has nothing on this."
@@ -16,6 +18,7 @@ links:
     audible: https://www.audible.com/pd/Mother-of-Learning-Arc-1-Audiobook/B09MXJQG1Z
 aliases: [/reviews/mol]
 tags: [series, crafting,  magic-school, time-loops, female-lead, completed]
+read_through: Completed
 ---
 
 I grew up on the Belgariad, graduated through Harry Potter to the Wheel of Time, conquered Malazan, was crushed by the Farseer Trilogy, and generally docked my ship at every fantasy port I could find.

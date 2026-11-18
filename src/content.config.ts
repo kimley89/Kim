@@ -7,6 +7,8 @@ const reviews = defineCollection({
   loader: glob({ pattern: '*/index.md', base: './content/reviews' }),
   schema: ({ image: _image }) =>
     z.object({
+      series_name: z.string().trim().min(1).optional(),
+      series_order: z.number().int().positive().optional(),
       title: z.string(),
       name: z.string(),
       description: z.string(),
@@ -26,6 +28,7 @@ const reviews = defineCollection({
         },
         z.number().int().positive()
       ).optional(),
+      read_through: z.string().optional(),
       search_terms: z.string().default(''),
       aliases: z.array(z.string()).default([]),
       // The frontmatter uses Hugo's `links: { amazon: "...", audible: "..." }`

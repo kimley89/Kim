@@ -64,6 +64,14 @@
     if (link.startsWith(base)) return link;
     return base + link;
   }
+
+  function formatDate(date: string): string {
+    return new Intl.DateTimeFormat('en', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(date));
+  }
 </script>
 
 <div id="tags" class="tag-list max-w-7xl mx-auto mt-6">
@@ -117,6 +125,7 @@
                     </ul>
                   </div>
                   <h4 class="mb-2">{post.name}</h4>
+                  <p class="text-sm text-green-300 mb-2">{formatDate(post.date)}</p>
                   <p class="text-lg text-green-300 flex-grow">{post.description}</p>
                 </div>
               </article>

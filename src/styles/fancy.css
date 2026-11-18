@@ -38,6 +38,18 @@ svg.ico {
   }
 }
 
+@media (min-width: 1024px) {
+  .tier-row--compact {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+  .tier-row--compact .tier-grid {
+    flex: none;
+    grid-template-columns: repeat(4, 150px);
+  }
+}
+
 /* Tier label columns reuse the card glow gradients (--grad-* in
    styling.css); the island sets --tier-grad and --tier-scrim per tier.
    The uniform dark layer on top keeps the white letter/description

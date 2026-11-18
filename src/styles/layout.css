@@ -20,6 +20,31 @@ body {
     border: 0.125rem solid var(--scrollbarBG);
   }
 }
+.series-review-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-green-600) 55%, transparent) transparent;
+}
+.series-review-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.series-review-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.series-review-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.series-review-scroll::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-green-600/50;
+}
+.series-review-scroll::-webkit-scrollbar-thumb:hover {
+  @apply bg-green-600/80;
+}
+.blog-post .series-review-paginator ul,
+.blog-post .series-review-paginator li {
+   @apply m-0 list-none p-0;
+ }
 
 .blog-post h2,
 .blog-post h3,
@@ -249,6 +274,21 @@ body {
     @apply text-green-50 bg-green-500;
   }
 
+ @media (hover: none) {
+    .source-chip.active-true:hover,
+    .format-chip.active-true:hover {
+       @apply text-green-50 bg-green-500;
+     }
+    .source-chip.active-false:hover,
+    .format-chip.active-false:hover {
+       @apply text-cream-50 bg-accent-500;
+     }
+    .source-chip.active-undefined:hover,
+    .format-chip.active-undefined:hover {
+       @apply text-green-400 bg-green-700;
+     }
+   }
+
   .source-filter-group,
   .format-filter-group {
     @apply inline-flex items-center m-2 overflow-hidden rounded-md;
@@ -400,6 +440,9 @@ body {
   ul {
     @apply max-w-2xl mx-auto my-6 list-disc pl-8;
   }
+  .blog-post .series-review-paginator ul {
+    @apply m-0 list-none p-0;
+  }
   ol {
     @apply max-w-2xl mx-auto my-6 list-decimal pl-8;
   }
@@ -441,6 +484,10 @@ body {
 }
 
 .review-summary {
+  .blog-post & a.btn-xs {
+    /* @apply text-xs py-[0.2rem] px-2; */
+    @apply text-sm py-0.5 px-2
+  }
   p {
     @apply mt-0 mb-4;
   }

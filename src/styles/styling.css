@@ -267,6 +267,11 @@
     }
   }
 
+  .series-review-paginator a,
+  .series-review-paginator a:hover {
+    box-shadow: none;
+  }
+
   p, ul, li, em, strong, a {
     @apply text-[1.5rem] sm:text-[2rem] leading-snug sm:leading-normal;
   }
@@ -335,7 +340,10 @@
 
 .rating {
   p.larger {
-    @apply text-3xl;
+    @apply text-[2.125rem];
+    @variant sm {
+      @apply text-3xl;
+    }
   }
   p.small {
     @apply text-2xl;
@@ -386,6 +394,11 @@
 .tag-relationship-building,
 .tag-weak-to-strong,
 .tag-poor-to-rich{
+  @apply bg-cream-600 text-accent-50 font-medium;
+}  
+
+.tag-travel,
+.tag-writing {
   @apply bg-cream-600 text-accent-50 font-medium;
 }  
   
@@ -451,7 +464,10 @@
   @apply text-sm;
 }
 .review-card-tags .review-tag-link {
-  @apply block py-1 px-2.5 text-sm text-inherit no-underline;
+  @apply block py-1 px-2.5 text-lg text-inherit no-underline;
+  @variant sm {
+    @apply py-1 px-2.5 text-sm;
+  }
 }
 .review-card-tags .review-tag-link:hover {
   @apply brightness-110;
@@ -459,6 +475,13 @@
 .review-card-tags .review-tag-link:focus-visible {
   @apply outline-2 outline-offset-2 outline-current;
 }
+
+/* .blog-post .review-summary a.btn-xs {
+  @apply text-lg py-1.5 px-2.5;
+  @variant sm {
+    @apply text-xs py-1 px-3;
+  }
+} */
   
 /* Turn white images to dark mode */
 .img-invert {
@@ -533,8 +556,7 @@
       padding: 4px;
   }
 }
-
-
+  
 .review-π {
   .bg2 {
     background: var(--grad-m);
