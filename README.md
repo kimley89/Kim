@@ -1,7 +1,7 @@
 # In development!
 
-# [Puregarnet's Journal](https://flamegarnet89.github.io/Kim/)
-Source for [Puregarnet's Journal]([https://flamegarnet89.github.io/Kim/])) — Puregarnet's
+# [Puregarnet's Journal](https://kimley89.github.io/Kim/)
+Source for [Puregarnet's Journal]([https://kimley89.github.io/Kim/])) — Puregarnet's
 personal site. Books, reviews, blog posts.
 
 The site is a static build produced by **Astro v5** with **Svelte 5**
